@@ -12,12 +12,14 @@ to see that you are pushing:
 `git status`   
 
 create new commit: 
-``` git commit -m "[the note describing what you changed]"                            
+``` 
+git commit -m "[the note describing what you changed]"                            
 git push origin master
 ```
 
 to remove file from github:        
-``` git rm --file1.m
+``` 
+git rm --file1.m
 git commit -m "removed file1.m from the repo"
 git push origin master
 ```
