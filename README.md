@@ -1,15 +1,23 @@
 # Team1Perception
 GitHub:                             
 whenever start to work - pull the newest version in the repository: 
-`git pull`                     
+```
+git pull
+```
 
-Whenever finish working and are ready the update the newest version:                          
-`git add . `            
+Whenever finish working and are ready to update the newest version:                          
+```
+git add .
+```
+
 or to only do certain files:
-`git add file1.m file2.m file3.m    `
-
+```
+git add file1.m file2.m file3.m    `
+```
 to see that you are pushing:
-`git status`   
+```
+git status`   
+```
 
 create new commit: 
 ``` 
