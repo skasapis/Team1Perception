@@ -2,8 +2,12 @@
 % get path to every image
 files = dir('deploy/test/*/*_image.jpg');
 
-% loop through every image in training set 
-for idx = 1:10 %numel(files)
+
+% loop through every image in test set -- crop to car and apply label
+numImg = numel(files);
+labels = zeros(numImg, 1);
+
+for idx = 1:numImg
     
     % get folder and picture name
     snapshot = [files(idx).folder, '/', files(idx).name];
