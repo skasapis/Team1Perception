@@ -12,11 +12,11 @@ git add .
 
 or to only do certain files:
 ```
-git add file1.m file2.m file3.m    `
+git add file1.m file2.m file3.m    
 ```
 to see that you are pushing:
 ```
-git status`   
+git status   
 ```
 
 create new commit: 
