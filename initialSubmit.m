@@ -10,7 +10,7 @@ for idx = 1:numel(files)
     % print name of image
     fprintf(fileID,name);
     % pick rand number 0-2
-    label = randi(3)-1;
+    label = randi(1,1);
     % print comma rand number newline
     fprintf(fileID,',%d\n',label);
 end

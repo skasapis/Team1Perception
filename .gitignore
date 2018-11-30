@@ -3,5 +3,10 @@ deploy/
 
 # dont track the content of these files
 projectNN.m
+demo.m
+demo.py
+centroids.csv
+classes.csv
+
 
 

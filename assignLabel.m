@@ -46,7 +46,7 @@ end
 
 function [] = printToFile(labels, folder_plus_Img)
     % open file to print to
-    fileID = fopen('Team1.txt','w'); % will have to change 'w' if want to append
+    fileID = fopen('Team1.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
 
     for n = 1:numel(labels)
