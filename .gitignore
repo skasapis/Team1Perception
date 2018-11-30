@@ -7,6 +7,6 @@ demo.m
 demo.py
 centroids.csv
 classes.csv
-
+*.m~
 
 
