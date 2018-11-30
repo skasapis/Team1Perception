@@ -1,0 +1,7 @@
+# dont track the content of this folder
+deploy/
+
+# dont track the content of these files
+projectNN.m
+
+
