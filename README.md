@@ -1,7 +1,7 @@
 # Team1Perception
 GitHub: 
 
-to download the repo through terminal -- it will download the repo into a folder called Team1Perception within whatever folder you have navigated to within your computer
+to download the repo through terminal -- it will download the repo into a folder called Team1Perception within whatever folder is your current working directory in terminal
 ```
 git clone https://github.com/skasapis/Team1Perception.git
 ```
