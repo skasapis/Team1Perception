@@ -2,20 +2,21 @@
 % http://www.robots.ox.ac.uk/~vgg/data/flowers/17/index.html
 % https://matlabacademy.mathworks.com
 
-
 % add images to datastore
-testds = imageDatastore('deploy/test/9b0e6947-340d-419d-ae8d-e73993afec6a/*_image.jpg'); %53 pictures
-trainds = imageDatastore('deploy/test/047b864f-0753-448b-9483-f990ae41abaf/*_image.jpg'); %110 pictures
+    % I had to pick one that started with a letter to the because
+    % matlab doesn't like names that start with a number
+testds = imageDatastore('deploy/test/d7f7c063-df18-4f96-a071-aa634b9e502e/*_image.jpg'); %53 pictures
+trainds = imageDatastore('deploy/trainval/af3ae5e6-27ef-4699-beb3-f2c72831a594/*_image.jpg'); %223 pictures
 
 fname = trainds.Files; %names of all files
-tname = trainds.Files;
+tname = testds.Files;
 
 numTrain = numel(fname);
 numTest = numel(tname);
 
 % Add labels to training data
-groundTruth = csvread('deploy/trainval/labels.csv',2,2);
-trainImgs.Labels = groundTruth(1:numTrain); %110
+groundTruth = csvread('deploy/trainval/labels.csv',1,1);
+trainds.Labels = groundTruth(1:numTrain); %110
 
 
 f1 = fname{1}
@@ -36,7 +37,9 @@ layers(end) = classificationLayer;
 options = trainingOptions('sgdm', 'InitialLearnRate', 0.001);
 
 %Perform training
+tic
 [carNet, info] = trainNetwork(trainds, layers, options);
+toc
 
 %Use trained network to classify single test image
 img = readimage(testds,1);
@@ -59,7 +62,12 @@ xtickangle(60)
 figure(2)
 plot(info.TrainingLoss)
 
+%
+figure(3)
+confusionchart(testImgs.Labels, flwrPreds)
+
+% print statistics
 numCorrect = nnz(flwrPreds == flwrActual)
 fracCorrect = numCorrect/24
-confusionchart(testImgs.Labels, flwrPreds)
+
 
