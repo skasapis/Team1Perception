@@ -45,3 +45,33 @@ vim .gitignore
     once it opens press "i" to insert text in the file,
     then press esc to stop inserting text,
     ":wq" followed by enter to save and quit
+
+
+
+Matlab Neural Nets:
+
+If want to run the file googlenet_full.m you will need the following toolboxes in matlab:
+to access matlab toolboxes: from matlab go to the tab home > add ons > search
+
+install:
+```
+googlenet
+alexnet
+deep learning toolbox
+Deep Learning Toolbox Importer for TensorFlow-Keras Models
+```
+
+If you plan on having the correctly formatted Team1.txt file you must also edit the line
+```
+fullName=snapshot(63:end); %wrt Marie path
+```
+to crop off the correct number of characters for your specific path setup. This line is in
+the function getPrintName at the bottom of the file googlenet_full.m
+
+Finally, you must run the python file called readFile.py
+In terminal:
+```
+cd <appropriate folder>
+python readFile.py
+```
+To adjust the labels from 1,2,3 to 0,1,2 (haven't yet adjusted the matlab code to adjust by itself)

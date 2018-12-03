@@ -1,30 +1,32 @@
 %Marie Brooks, mariegb
-%Ran 12/1/18 with resulting 90% accuracy on single folder of UNCROPPED data. Took 6
-%min 42 seconds to run on 1 CPU on 2011 macbook pro.
+%Ran 12/1/18 with resulting 90% accuracy on single folder of UNCROPPED data. 
+%Took 6 min 42 seconds to run on 1 CPU on 2011 macbook pro.
 %REF: https://www.mathworks.com/help/deeplearning/examples/train-deep-learning-network-to-classify-new-images.html
 
 %I believe we need to change something in this network, such as
 %adding/deleting layers or changing an activation function. I don't think
 %just changing the fully connected and classification layers is enough.
 
-% Create image datastore from one folder of training images, for local run
-% purposes.
+% Create image datastore
 all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
 %labels=dlmread('deploy/labels.csv',',',[1 1 110 1]);
 labels=dlmread('deploy/labels.csv',',',1,1);
 
-labels_str=cellstr(num2str(labels)); %reformatting to make categorical possible
+%reformatting to make categorical possible
+labels_str=cellstr(num2str(labels));
 valueset={'0','1','2'};
 labels_cat=categorical(labels_str,valueset);
 all_imds.Labels=labels_cat;
+
 %Split off some values for validation
-[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.7);
+[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.7,'randomized');
 
 %import googlenet
 net=googlenet;
 % Choose layers to replace
 lgraph = layerGraph(net);
+
 %If using AlexNet:
 %lgraph = layerGraph(net.Layers); 
 %set FCC and classification layers as required
@@ -58,11 +60,11 @@ augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 %Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
-    'MaxEpochs',3, ...
+    'MaxEpochs',6, ... % would like to try 8 or 12
     'InitialLearnRate',3e-4, ...
     'Shuffle','every-epoch', ...
     'ValidationData',augimdsValidation, ...
-    'ValidationFrequency',3, ...
+    'ValidationFrequency',30, ...
     'Verbose',false, ...
     'Plots','training-progress');
 
@@ -76,14 +78,18 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 [test_labels,~] = classify(new_net,augimdstest);
 
 printToFile(test_labels);
+disp('CLASSIFICATION DONE!');
+
+%% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
+
 
 function [printName] = getPrintName(idx)
     % get folder and picture name
     files = dir('deploy/test/*/*_image.jpg');
     snapshot = [files(idx).folder, '/', files(idx).name];
-    %fullName = snapshot(107:end); % wrt Izzy path
-    %name = snapshot(??:end-10); % wrt Jen path
+    %fullName = snapshot(107:end); % wrt Izzy path and Chris
     fullName=snapshot(63:end); %wrt Marie path
+    
     % remove the "_image.jpg" for when printing to the file
     printName = fullName(1:end-10);
 end
@@ -92,6 +98,7 @@ function [] = printToFile(labels)
     % open file to print to
     fileID = fopen('Team1.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
+    
     for n = 1:numel(labels)
         % print name of image
         printName = getPrintName(n);
@@ -99,6 +106,7 @@ function [] = printToFile(labels)
         % print comma label newline
         fprintf(fileID,',%d\n',labels(n));
     end
+    
     % close file when done printing
     fclose(fileID);
 end

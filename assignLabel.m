@@ -14,11 +14,11 @@ for idx = 1:numImg
     
     % get folder and picture name
     snapshot = [files(idx).folder, '/', files(idx).name];
-    fullName = snapshot(87:end); % wrt Izzy path
+    fullName = snapshot(107:end); % wrt Izzy path
     %name = snapshot(??:end-10); % wrt Jen path
     
     % remove the "_image.jpg" for when printing to the file
-    print_name = fullName(1:end-10);
+    printName = fullName(1:end-10);
     
     croppedImg = cropImage(fnames(idx), snapshot);
     labels(idx) = assign_Label(croppedImg);
@@ -45,6 +45,7 @@ function [label] = assign_Label(cropImg)
     % learning
     % apply NN to cropped image
     label = randi(3)-1;
+    label = trainOnCroppedImg();
     
 end
 
