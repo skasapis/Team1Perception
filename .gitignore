@@ -9,5 +9,5 @@ centroids.csv
 classes.csv
 *.m~
 deepLearningOnramp.m
-
+*.mat
 
