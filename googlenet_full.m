@@ -1,11 +1,8 @@
-%Marie Brooks, mariegb
-%Ran 12/1/18 with resulting 90% accuracy on single folder of UNCROPPED data. 
-%Took 6 min 42 seconds to run on 1 CPU on 2011 macbook pro.
+%Marie Brooks and Izzy Salley
+%66% accuracy obtained 12/2/18
 %REF: https://www.mathworks.com/help/deeplearning/examples/train-deep-learning-network-to-classify-new-images.html
 
-%I believe we need to change something in this network, such as
-%adding/deleting layers or changing an activation function. I don't think
-%just changing the fully connected and classification layers is enough.
+%Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
 
 % Create image datastore
 all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
@@ -54,6 +51,20 @@ lgraph = createLgraphUsingConnections(layers,connections);
 
 %Data augmentation to meet size requirement
 inputSize = net.Layers(1).InputSize;
+%Optional data augmentation code:
+%pixelRange = [-30 30];
+%scaleRange = [0.9 1.1];
+%imageAugmenter = imageDataAugmenter( ...
+%    'RandXReflection',true, ...
+%    'RandXTranslation',pixelRange, ...
+%    'RandYTranslation',pixelRange, ...
+%    'RandXScale',scaleRange, ...
+%    'RandYScale',scaleRange);
+%augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
+%    'DataAugmentation',imageAugmenter);
+%
+%comment out current augimdsTrain line if this is used.
+
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
