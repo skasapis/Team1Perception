@@ -1,4 +1,4 @@
-outfile = open("Team1_fixed6.txt", "w")
+outfile = open("Team1_fixed7.txt", "w")
 outfile.write('guid/image,label\n')
 
 with open("Team1.txt") as fin:

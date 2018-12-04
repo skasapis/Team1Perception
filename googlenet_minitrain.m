@@ -62,7 +62,8 @@ options = trainingOptions('sgdm', ...
     'ValidationData',augimdsValidation, ...
     'ValidationFrequency',30, ...
     'Verbose',false, ...
-    'Plots','training-progress','OutputFcn',@(info)savetrainingplot(info));
+    'Plots','training-progress');%,...
+%     'OutputFcn',@(info)savetrainingplot(info));
 
 %% Train network
 [net, info] = trainNetwork(augimdsTrain,lgraph,options);
@@ -119,13 +120,13 @@ function [] = printToFile(labels)
     fclose(fileID);
 end
 
-function stop=savetrainingplot(info)
-stop=false;  %prevents this function from ending trainNetwork prematurely
-if info.State=='done'   %check if all iterations have completed
-% if true
-        fig = findall(groot, 'Type', 'Figure');
-        saveas(fig,'TrainingProgress.png')  % save figure as .png, you can change this
-end
-end
+% function stop=savetrainingplot(info)
+% stop=false;  %prevents this function from ending trainNetwork prematurely
+% if info.State=='done'   %check if all iterations have completed
+% % if true
+%         fig = findall(groot, 'Type', 'Figure');
+%         saveas(fig,'TrainingProgress.png')  % save figure as .png, you can change this
+% end
+% end
 
 
