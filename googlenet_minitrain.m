@@ -22,7 +22,7 @@ mini_imds.Labels=labels_cat;
 %Split off some values for validation
 [imdsTrain,imdsValidation] = splitEachLabel(mini_imds,0.7);
 
-%import googlenet
+%% import googlenet
 net=googlenet;
 % Choose layers to replace
 lgraph = layerGraph(net);
@@ -64,7 +64,7 @@ options = trainingOptions('sgdm', ...
     'Verbose',false, ...
     'Plots','training-progress');
 
-%Train network
+%% Train network
 [net, info] = trainNetwork(augimdsTrain,lgraph,options);
 save net
 
@@ -77,16 +77,15 @@ hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
 print('AccuracyAndLoss', '-dpng')
 
 
-%Still need to write the part where it classifies the test data and writes
-%it in our required format.
-
 %Create augmented dataset from test data
 test_imds=imageDatastore('deploy/test/0ff0a23e-5f50-4461-8ccf-2b71bead2e8e/*_image.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
-%Classify test data
-[test_labels,~] = classify(new_net,augimdstest);
+%% Classify test data
+[test_labels,~] = classify(net,augimdstest);
 
 printToFile(test_labels);
+% fileID = fopen('stats.txt','w');
+
 disp('CLASSIFICATION DONE!');
 
 
