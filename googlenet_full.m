@@ -4,7 +4,7 @@
 
 %Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
 
-% Create image datastore
+%% Create image datastore
 all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
 %labels=dlmread('deploy/labels.csv',',',[1 1 110 1]);
@@ -19,7 +19,7 @@ all_imds.Labels=labels_cat;
 %Split off some values for validation
 [imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.7,'randomized');
 
-%import googlenet
+%% import googlenet and set options
 net=googlenet;
 % Choose layers to replace
 lgraph = layerGraph(net);
@@ -52,23 +52,22 @@ lgraph = createLgraphUsingConnections(layers,connections);
 %Data augmentation to meet size requirement
 inputSize = net.Layers(1).InputSize;
 %Optional data augmentation code:
-%pixelRange = [-30 30];
-%scaleRange = [0.9 1.1];
-%imageAugmenter = imageDataAugmenter( ...
-%    'RandXReflection',true, ...
-%    'RandXTranslation',pixelRange, ...
-%    'RandYTranslation',pixelRange, ...
-%    'RandXScale',scaleRange, ...
-%    'RandYScale',scaleRange);
-%augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
-%    'DataAugmentation',imageAugmenter);
-%
-%comment out current augimdsTrain line if this is used.
+pixelRange = [-30 30];
+scaleRange = [0.9 1.1];
+imageAugmenter = imageDataAugmenter( ...
+   'RandXReflection',true, ...
+   'RandXTranslation',pixelRange, ...
+   'RandYTranslation',pixelRange, ...
+   'RandXScale',scaleRange, ...
+   'RandYScale',scaleRange);
+augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
+   'DataAugmentation',imageAugmenter);
 
+%comment out the following augimdsTrain line if above is
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-%Set options
+% Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
     'MaxEpochs',6, ... % would like to try 8 or 12
@@ -79,19 +78,22 @@ options = trainingOptions('sgdm', ...
     'Verbose',false, ...
     'Plots','training-progress');
 
-%Train network
+%% Train network
 new_net = trainNetwork(augimdsTrain,lgraph,options);
 save new_net
 
 figure(1)
 subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
-hold on; plot(info.ValidationAccuracy, 'k--*'); grid on; axis([1 epochs 0 100]);
+hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
 
 subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
-hold on; plot(info.ValidationLoss,'k--*'); grid on; axis([1 epochs 0 2]);
+hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
 print('AccuracyAndLoss', '-dpng')
 
-%Create augmented dataset from test data
+
+
+%% classify test data
+% Create augmented dataset from test data
 test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
@@ -110,7 +112,8 @@ function [printName] = getPrintName(idx)
     files = dir('deploy/test/*/*_image.jpg');
     snapshot = [files(idx).folder, '/', files(idx).name];
     %fullName = snapshot(107:end); % wrt Izzy path and Chris
-    fullName=snapshot(63:end); %wrt Marie path
+    %fullName=snapshot(63:end); %wrt Marie path
+    fullName=snapshot(40:end); %wrt ssh path
     
     % remove the "_image.jpg" for when printing to the file
     printName = fullName(1:end-10);

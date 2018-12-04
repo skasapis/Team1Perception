@@ -70,18 +70,57 @@ save net
 
 figure(1)
 subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
-hold on; plot(info.ValidationAccuracy, 'k--*'); grid on; axis([1 epochs 0 100]);
+hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
 
 subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
-hold on; plot(info.ValidationLoss,'k--*'); grid on; axis([1 epochs 0 2]);
+hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
 print('AccuracyAndLoss', '-dpng')
 
 
 %Still need to write the part where it classifies the test data and writes
 %it in our required format.
 
+%Create augmented dataset from test data
+test_imds=imageDatastore('deploy/test/0ff0a23e-5f50-4461-8ccf-2b71bead2e8e/*_image.jpg');
+augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
+%Classify test data
+[test_labels,~] = classify(new_net,augimdstest);
+
+printToFile(test_labels);
 disp('CLASSIFICATION DONE!');
 
-fileID = fopen('Team1.txt','w');
-fprintf(fileID,'trained network by classification has not been set up\n');
+
+
+%% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
+
+
+function [printName] = getPrintName(idx)
+    % get folder and picture name
+    files = dir('deploy/test/*/*_image.jpg');
+    snapshot = [files(idx).folder, '/', files(idx).name];
+    %fullName = snapshot(107:end); % wrt Izzy path and Chris
+    %fullName=snapshot(63:end); %wrt Marie path
+    fullName=snapshot(40:end); %wrt ssh path
+    
+    % remove the "_image.jpg" for when printing to the file
+    printName = fullName(1:end-10);
+end
+
+function [] = printToFile(labels)
+    % open file to print to
+    fileID = fopen('Team1.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fprintf(fileID,'guid/image,label\n');
+    
+    for n = 1:numel(labels)
+        % print name of image
+        printName = getPrintName(n);
+        fprintf(fileID,printName);
+        % print comma label newline
+        fprintf(fileID,',%d\n',labels(n));
+    end
+    
+    % close file when done printing
+    fclose(fileID);
+end
+
 
