@@ -67,10 +67,11 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
+epochs = 6;
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
-    'MaxEpochs',12, ... % would like to try 8 or 12
+    'MaxEpochs',epochs, ... % would like to try 8 or 12
     'InitialLearnRate',3e-4, ...
     'Shuffle','every-epoch', ...
     'ValidationData',augimdsValidation, ...
@@ -81,16 +82,7 @@ options = trainingOptions('sgdm', ...
 %% Train network
 [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
 save new_net
-
-figure(1)
-subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
-hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
-
-subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
-hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
-print('AccuracyAndLoss', '-dpng')
-
-
+disp('TRAINING COMPLETE!');
 
 %% classify test data
 % Create augmented dataset from test data
@@ -98,10 +90,18 @@ test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
 [test_labels,~] = classify(new_net,augimdstest);
+disp('CLASSIFICATION COMPLETE!');
 
 printToFile(test_labels);
-disp('CLASSIFICATION DONE!');
 
+%% display Loss and Accuracy
+figure(1)
+subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
+hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
+
+subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
+hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
+print('AccuracyAndLoss', '-dpng')
 
 
 %% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
