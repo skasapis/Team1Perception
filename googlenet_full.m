@@ -46,7 +46,7 @@ lgraph = replaceLayer(lgraph,classLayer.Name,newClassLayer);
 layers = lgraph.Layers;
 connections = lgraph.Connections;
 
-layers(1:10) = freezeWeights(layers(1:10));
+% layers(1:10) = freezeWeights(layers(1:10));
 lgraph = createLgraphUsingConnections(layers,connections);
 
 %Data augmentation to meet size requirement
@@ -67,7 +67,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 12;
+epochs = 6;
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
