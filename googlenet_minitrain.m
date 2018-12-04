@@ -51,10 +51,12 @@ inputSize = net.Layers(1).InputSize;
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
+
+epochs = 8;
 %Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
-    'MaxEpochs',8, ...
+    'MaxEpochs',epochs, ...
     'InitialLearnRate',3e-4, ...
     'Shuffle','every-epoch', ...
     'ValidationData',augimdsValidation, ...
@@ -67,10 +69,11 @@ options = trainingOptions('sgdm', ...
 save net
 
 figure(1)
-subplot(2,1,1); plot(info.TrainingAccuracy,'b'); ylabel('Accuracy');
-hold on; plot(info.ValidationAccuracy, 'k--*');
-subplot(2,1,2); plot(info.TrainingLoss,'r'); ylabel('Loss');
-hold on; plot(info.ValidationLoss,'k--*');
+subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
+hold on; plot(info.ValidationAccuracy, 'k--*'); grid on; axis([0 epochs 0 100]);
+
+subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
+hold on; plot(info.ValidationLoss,'k--*'); grid on; axis([0 epochs 0 4]);
 print('AccuracyAndLoss', '-dpng')
 
 

@@ -84,11 +84,11 @@ new_net = trainNetwork(augimdsTrain,lgraph,options);
 save new_net
 
 figure(1)
-subplot(2,1,1); plot(info.TrainingAccuracy,'b'); ylabel('Accuracy');
-hold on
-plot(info.ValidationAccuracy, 'k--*');
-subplot(2,1,2); plot(info.TrainingLoss,'r');ylabel('Loss');
-plot(info.ValidationLoss,'k--*');
+subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
+hold on; plot(info.ValidationAccuracy, 'k--*'); grid on; axis([0 epochs 0 100]);
+
+subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
+hold on; plot(info.ValidationLoss,'k--*'); grid on; axis([0 epochs 0 4]);
 print('AccuracyAndLoss', '-dpng')
 
 %Create augmented dataset from test data
