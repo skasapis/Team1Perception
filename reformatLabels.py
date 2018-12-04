@@ -1,7 +1,7 @@
-outfile = open("Team1_fixed2.txt", "w")
+outfile = open("Team1_fixed6.txt", "w")
 outfile.write('guid/image,label\n')
 
-with open("Team1_sub4.txt") as fin:
+with open("Team1.txt") as fin:
     data = fin.readlines()
     for line in data:
         words = line.split(',')

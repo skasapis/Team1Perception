@@ -67,7 +67,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 6;
+epochs = 12;
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
@@ -80,7 +80,9 @@ options = trainingOptions('sgdm', ...
     'Plots','training-progress');
 
 %% Train network
+tic
 [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
+toc
 save new_net
 save info
 disp('TRAINING COMPLETE!');
@@ -90,7 +92,9 @@ disp('TRAINING COMPLETE!');
 test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
+tic
 [test_labels,~] = classify(new_net,augimdstest);
+toc
 disp('CLASSIFICATION COMPLETE!');
 
 printToFile(test_labels);
