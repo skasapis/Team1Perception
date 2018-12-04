@@ -62,7 +62,7 @@ options = trainingOptions('sgdm', ...
     'ValidationData',augimdsValidation, ...
     'ValidationFrequency',30, ...
     'Verbose',false, ...
-    'Plots','training-progress');
+    'Plots','training-progress','OutputFcn',@(info)savetrainingplot(info));
 
 %% Train network
 [net, info] = trainNetwork(augimdsTrain,lgraph,options);
@@ -86,6 +86,7 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 printToFile(test_labels);
 disp('CLASSIFICATION DONE!');
 
+findall(groot, 'Type', 'Figure')
 
 
 %% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
@@ -118,6 +119,14 @@ function [] = printToFile(labels)
     
     % close file when done printing
     fclose(fileID);
+end
+
+function stop=savetrainingplot(info)
+stop=false;  %prevents this function from ending trainNetwork prematurely
+if info.State=='done'   %check if all iterations have completed
+% if true
+        saveas(gcf,'TrainingProgress.png')  % save figure as .png, you can change this
+end
 end
 
 
