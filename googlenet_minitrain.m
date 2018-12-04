@@ -67,6 +67,7 @@ options = trainingOptions('sgdm', ...
 %% Train network
 [net, info] = trainNetwork(augimdsTrain,lgraph,options);
 save net
+disp('TRAINING DONE!');
 
 figure(1)
 subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
@@ -76,7 +77,6 @@ subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
 hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
 print('AccuracyAndLoss', '-dpng')
 
-
 %Create augmented dataset from test data
 test_imds=imageDatastore('deploy/test/0ff0a23e-5f50-4461-8ccf-2b71bead2e8e/*_image.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
@@ -85,8 +85,6 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 
 printToFile(test_labels);
 disp('CLASSIFICATION DONE!');
-
-findall(groot, 'Type', 'Figure')
 
 
 %% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
@@ -125,7 +123,8 @@ function stop=savetrainingplot(info)
 stop=false;  %prevents this function from ending trainNetwork prematurely
 if info.State=='done'   %check if all iterations have completed
 % if true
-        saveas(findall(groot, 'Type', 'Figure'),'TrainingProgress.png')  % save figure as .png, you can change this
+        fig = findall(groot, 'Type', 'Figure')
+        saveas(fig(2),'TrainingProgress.png')  % save figure as .png, you can change this
 end
 end
 
