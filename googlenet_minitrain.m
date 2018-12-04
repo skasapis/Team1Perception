@@ -3,6 +3,11 @@
 %min 42 seconds to run on 1 CPU on 2011 macbook pro.
 %REF: https://www.mathworks.com/help/deeplearning/examples/train-deep-learning-network-to-classify-new-images.html
 
+
+matlab -nodisplay -nodesktop -r "run ./googlenet_minitrain.m"
+
+
+
 % Create image datastore from one folder of training images, for local run
 % purposes.
 mini_imds=imageDatastore('deploy/trainval/047b864f-0753-448b-9483-f990ae41abaf/*_image.jpg');
@@ -59,13 +64,13 @@ options = trainingOptions('sgdm', ...
 
 %Train network
 [net, info] = trainNetwork(augimdsTrain,lgraph,options);
+save net
 
 figure(1)
 subplot(2,1,1); plot(info.TrainingAccuracy,'b'); ylabel('Accuracy');
-hold on
-plot(info.ValidationAccuracy, 'k--*');
-subplot(2,1,2); plot(info.TrainingLoss,'r');ylabel('Loss');
-plot(info.ValidationLoss,'k--*');
+hold on; plot(info.ValidationAccuracy, 'k--*');
+subplot(2,1,2); plot(info.TrainingLoss,'r'); ylabel('Loss');
+hold on; plot(info.ValidationLoss,'k--*');
 print('AccuracyAndLoss', '-dpng')
 
 
