@@ -82,6 +82,7 @@ options = trainingOptions('sgdm', ...
 %% Train network
 [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
 save new_net
+save info
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -93,6 +94,7 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 disp('CLASSIFICATION COMPLETE!');
 
 printToFile(test_labels);
+disp('TEXT FILE GENERATRED');
 
 %% display Loss and Accuracy
 figure(1)
