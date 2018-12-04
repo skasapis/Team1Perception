@@ -79,7 +79,7 @@ options = trainingOptions('sgdm', ...
     'Plots','training-progress');
 
 %% Train network
-new_net = trainNetwork(augimdsTrain,lgraph,options);
+[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
 save new_net
 
 figure(1)
