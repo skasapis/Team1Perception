@@ -6,12 +6,14 @@
 % Create image datastore from one folder of training images, for local run
 % purposes.
 mini_imds=imageDatastore('deploy/trainval/047b864f-0753-448b-9483-f990ae41abaf/*_image.jpg');
+
 % Add labels from .csv
 labels=dlmread('deploy/labels.csv',',',[1 1 110 1]);
 labels_str=cellstr(num2str(labels)); %reformatting to make categorical possible
 valueset={'0','1','2'};
 labels_cat=categorical(labels_str,valueset);
 mini_imds.Labels=labels_cat;
+
 %Split off some values for validation
 [imdsTrain,imdsValidation] = splitEachLabel(mini_imds,0.7);
 
@@ -47,18 +49,31 @@ augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 %Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
-    'MaxEpochs',6, ...
+    'MaxEpochs',8, ...
     'InitialLearnRate',3e-4, ...
     'Shuffle','every-epoch', ...
     'ValidationData',augimdsValidation, ...
-    'ValidationFrequency',3, ...
+    'ValidationFrequency',30, ...
     'Verbose',false, ...
     'Plots','training-progress');
 
 %Train network
-net = trainNetwork(augimdsTrain,lgraph,options);
+[net, info] = trainNetwork(augimdsTrain,lgraph,options);
+
+figure(1)
+subplot(2,1,1); plot(info.TrainingAccuracy,'b'); ylabel('Accuracy');
+hold on
+plot(info.ValidationAccuracy, 'k--*');
+subplot(2,1,2); plot(info.TrainingLoss,'r');ylabel('Loss');
+plot(info.ValidationLoss,'k--*');
+print('AccuracyAndLoss', '-dpng')
+
 
 %Still need to write the part where it classifies the test data and writes
 %it in our required format.
 
+disp('CLASSIFICATION DONE!');
+
+fileID = fopen('Team1.txt','w');
+fprintf(fileID,'trained network by classification has not been set up\n');
 

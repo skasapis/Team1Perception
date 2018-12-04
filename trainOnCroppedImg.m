@@ -116,7 +116,12 @@ if retrainBool
     toc
     
     figure(1)
-    plot(info.TrainingLoss)
+    subplot(2,1,1); plot(info.TrainingAccuracy,'b');
+    hold on
+    plot(info.ValidationAccuracy, 'k--*');
+    subplot(2,1,2); plot(info.TrainingLoss,'r');
+    plot(info.ValidationLoss,'k--*');
+    print('AccuracyAndLoss', '-dpng')
     
 else % use preexisting custom net
     load carNet

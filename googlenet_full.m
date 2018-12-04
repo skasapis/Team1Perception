@@ -81,6 +81,15 @@ options = trainingOptions('sgdm', ...
 
 %Train network
 new_net = trainNetwork(augimdsTrain,lgraph,options);
+save new_net
+
+figure(1)
+subplot(2,1,1); plot(info.TrainingAccuracy,'b'); ylabel('Accuracy');
+hold on
+plot(info.ValidationAccuracy, 'k--*');
+subplot(2,1,2); plot(info.TrainingLoss,'r');ylabel('Loss');
+plot(info.ValidationLoss,'k--*');
+print('AccuracyAndLoss', '-dpng')
 
 %Create augmented dataset from test data
 test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
@@ -90,6 +99,8 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 
 printToFile(test_labels);
 disp('CLASSIFICATION DONE!');
+
+
 
 %% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
 
