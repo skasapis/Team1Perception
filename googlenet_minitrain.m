@@ -123,8 +123,8 @@ function stop=savetrainingplot(info)
 stop=false;  %prevents this function from ending trainNetwork prematurely
 if info.State=='done'   %check if all iterations have completed
 % if true
-        fig = findall(groot, 'Type', 'Figure')
-        saveas(fig(2),'TrainingProgress.png')  % save figure as .png, you can change this
+        fig = findall(groot, 'Type', 'Figure');
+        saveas(fig,'TrainingProgress.png')  % save figure as .png, you can change this
 end
 end
 
