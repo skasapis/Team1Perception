@@ -4,7 +4,7 @@
 %REF: https://www.mathworks.com/help/deeplearning/examples/train-deep-learning-network-to-classify-new-images.html
 
 
-matlab -nodisplay -nodesktop -r "run ./googlenet_minitrain.m"
+% to run through ssh: matlab -nodisplay -nodesktop -r "run ./googlenet_minitrain.m"
 
 
 
