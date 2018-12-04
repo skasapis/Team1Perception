@@ -84,8 +84,6 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 [test_labels,~] = classify(net,augimdstest);
 
 printToFile(test_labels);
-% fileID = fopen('stats.txt','w');
-
 disp('CLASSIFICATION DONE!');
 
 
