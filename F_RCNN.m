@@ -1,7 +1,29 @@
-% Load vehicle data set
+%% Load vehicle data set
+
+data = load('fasterRCNNVehicleTrainingData.mat');
+
+dat = data.detector;
+lay = data.layers;
+clear data
+
+bbds = dir('trainval/*/*_bbox.bin');
+bbds1 = [];
+for i = 1:5%size(bbds)
+bbdspath = bbds(i).folder;
+bbdsname = bbds(i).name;
+bbds1 = [bbds1 ; [bbdspath,'\',bbdsname]];
+end 
+
+ls *.jpg
+imds = imageDatastore('trainval/*/*_image.jpg');
+fname = imds.Files;
+clear imds
+fname = cell2table(fname);
+save fname
+%%
 data = load('fasterRCNNVehicleTrainingData.mat');
 vehicleDataset = data.vehicleTrainingData;
-%%
+
 % Display first few rows of the data set.
 % vehicleDataset(1:4,:)
 
@@ -174,3 +196,10 @@ xlabel('Recall')
 ylabel('Precision')
 grid on
 title(sprintf('Average Precision = %.2f', ap))
+
+%Functions
+function data = read_bin(file_name)
+id = fopen(file_name, 'r');
+data = fread(id, inf, 'single');
+fclose(id);
+end
