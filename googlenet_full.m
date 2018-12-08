@@ -129,7 +129,7 @@ end
 function [] = printToFile(labels)
     % open file to print to
     fileID = fopen('Team1.txt','w'); % will have to change 'w' if want to append instead of overwrite
-    %fprintf(fileID,'guid/image,label\n');
+    fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
         % print name of image
