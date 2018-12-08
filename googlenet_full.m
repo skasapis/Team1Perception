@@ -93,6 +93,8 @@ augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
 tic
 [test_labels,~] = classify(new_net,augimdstest);
+%Convert to 0,1,2
+test_labels=grp2idx(test_labels)-1;
 toc
 disp('CLASSIFICATION COMPLETE!');
 
