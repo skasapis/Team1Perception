@@ -2,4 +2,7 @@ submit 7: Team1_fixed6.txt -- 6 epochs -- validation frequency 30 -- no fixed we
 submit 8: Team1_fixed7.txt -- 6 epochs -- validation frequency 30 -- no fixed weights
 submit 9: Team1_fixed9.txt -- 15 epochs -- validation frequency 30 -- no fixed weights
 submit 10: Team1_fixed10.txt -- 15 epochs -- validation frequency 30 -- no fixed weights
+submit 11: Team1_fixed11.txt --15 epochs -- validation frequency 30 -- validation percentage 20 -- no fixed weights %Running
+Up next: 8 epochs, 20% validation
+
 
