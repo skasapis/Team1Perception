@@ -7,7 +7,6 @@
 %% Create image datastore
 all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
-%labels=dlmread('deploy/labels.csv',',',[1 1 110 1]);
 labels=dlmread('deploy/labels.csv',',',1,1);
 
 %reformatting to make categorical possible
@@ -17,7 +16,7 @@ labels_cat=categorical(labels_str,valueset);
 all_imds.Labels=labels_cat;
 
 %Split off some values for validation
-[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.7,'randomized');
+[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.8,'randomized');
 
 %% import googlenet and set options
 net=googlenet;
