@@ -3,37 +3,38 @@
 %https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html#bvkk009-1-trainingData
 %% Load vehicle data set
 
-clc; clear all;
-data = load('fasterRCNNVehicleTrainingData.mat');
-dat = data.detector;
-lay = data.layers;
-clear data
-bbds = dir('C:/Users/skasapis/Desktop/Naval_Arch/Self_Driving_Cars/Perception_Project/deploy/trainval/*/*_bbox.bin');
-bbds1 = [];
-rotation_vector = [];
-centroid_position = [];
-bbox_size = [];
-centroid_pos_char = cell(length(bbds),1);
+%clc; clear all;
+%data = load('fasterRCNNVehicleTrainingData.mat');
+%dat = data.detector;
+%lay = data.layers;
+%clear data
+bbds = dir('deploy/trainval/*/*_bbox.bin'); %run from inside the folder, easier to make consistent among all users
+%bbds1 = [];
+rotation_vector = zeros(3,size(bbds,1));
+centroid_position = zeros(3,size(bbds,1));
+bbox_size = zeros(3,size(bbds,1));
+%centroid_pos_char = cell(length(bbds),1);
 for i = 1:size(bbds)
-bbdspath = bbds(i).folder;
-bbdsname = bbds(i).name;
-binpath = [bbdspath,'\',bbdsname]; %all the .bin path characters in a variable
-bin_contents = read_bin(binpath); %all 11 .bin contents in one array
-rotation_vector = [rotation_vector bin_contents(1:3)]; %rotation vector for all 7573
-centroid_position = [centroid_position bin_contents(4:6)]; %centroid position foar all 7573
-bbox_size = [bbox_size bin_contents(7:9)]; %bbox size for all 7573
-centroid_pos_char(i) = { ['[' num2str(centroid_position(1,i)) ',' num2str(centroid_position(2,i)) ',' num2str(centroid_position(3,i)) ']'] };
+    bbdspath = bbds(i).folder;
+    bbdsname = bbds(i).name;
+    binpath = [bbdspath,'/',bbdsname]; %all the .bin path characters in a variable %MGB: Flipped \ to /
+    bin_contents = read_bin(binpath); %all 11 .bin contents in one array
+    rotation_vector(:,i) = bin_contents(1:3); %rotation vector for all 7573
+    centroid_position(:,i) = bin_contents(4:6); %centroid position for all 7573
+    bbox_size(:,i) = bin_contents(7:9); %bbox size for all 7573
+    %centroid_pos_char(i) = { ['[' num2str(centroid_position(1,i)) ',' num2str(centroid_position(2,i)) ',' num2str(centroid_position(3,i)) ']'] };
 end 
 
-ls *.jpg
-imds = imageDatastore('C:/Users/skasapis/Desktop/Naval_Arch/Self_Driving_Cars/Perception_Project/deploy/trainval/*/*_image.jpg');
-fname = imds.Files;
-clear imds
-fname = cell2table(fname);
-save fname
-fcoord = cell2table(centroid_pos_char);
-save fcoord
-f = [fname,fcoord];
+%ls *.jpg
+imds = imageDatastore('deploy/trainval/*/*_image.jpg');
+centroid_pos_cell=mat2cell(centroid_position',ones(size(centroid_position,2),1));
+%fname = imds.Files;
+%clear imds
+%fname = cell2table(fname);
+%save fname
+%fcoord = cell2table(centroid_pos_char);
+%save fcoord
+f = table(imds.Files,centroid_pos_cell);
 
 %%
 data = load('fasterRCNNVehicleTrainingData.mat');
