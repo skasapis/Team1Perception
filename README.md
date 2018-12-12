@@ -67,11 +67,3 @@ fullName=snapshot(63:end); %wrt Marie path
 ```
 to crop off the correct number of characters for your specific path setup. This line is in
 the function getPrintName at the bottom of the file googlenet_full.m
-
-Finally, you must run the python file called reformatLabels.py
-In terminal:
-```
-cd <appropriate folder>
-python reformatLabels.py
-```
-To adjust the labels from 1,2,3 to 0,1,2 (haven't yet adjusted the matlab code to adjust by itself)
