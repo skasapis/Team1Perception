@@ -14,27 +14,28 @@ rotation_vector = zeros(3,size(bbds,1));
 centroid_position = zeros(3,size(bbds,1));
 bbox_size = zeros(3,size(bbds,1));
 %centroid_pos_char = cell(length(bbds),1);
-for i = 1:size(bbds)
-    bbdspath = bbds(i).folder;
-    bbdsname = bbds(i).name;
-    binpath = [bbdspath,'/',bbdsname]; %all the .bin path characters in a variable %MGB: Flipped \ to /
-    bin_contents = read_bin(binpath); %all 11 .bin contents in one array
-    rotation_vector(:,i) = bin_contents(1:3); %rotation vector for all 7573
-    centroid_position(:,i) = bin_contents(4:6); %centroid position for all 7573
-    bbox_size(:,i) = bin_contents(7:9); %bbox size for all 7573
-    %centroid_pos_char(i) = { ['[' num2str(centroid_position(1,i)) ',' num2str(centroid_position(2,i)) ',' num2str(centroid_position(3,i)) ']'] };
-end 
+% % % for i = 1:size(bbds)
+% % %     bbdspath = bbds(i).folder;
+% % %     bbdsname = bbds(i).name;
+% % %     binpath = [bbdspath,'/',bbdsname]; %all the .bin path characters in a variable %MGB: Flipped \ to /
+% % %     bin_contents = read_bin(binpath); %all 11 .bin contents in one array
+% % %     rotation_vector(:,i) = bin_contents(1:3); %rotation vector for all 7573
+% % %     centroid_position(:,i) = bin_contents(4:6); %centroid position for all 7573
+% % %     bbox_size(:,i) = bin_contents(7:9); %bbox size for all 7573
+% % %     %centroid_pos_char(i) = { ['[' num2str(centroid_position(1,i)) ',' num2str(centroid_position(2,i)) ',' num2str(centroid_position(3,i)) ']'] };
+% % % end 
 
 %ls *.jpg
 imds = imageDatastore('deploy/trainval/*/*_image.jpg');
-centroid_pos_cell=mat2cell(centroid_position',ones(size(centroid_position,2),1));
+centroid_pos_cell = BBox_Code();
+% % % centroid_pos_cell=mat2cell(centroid_position',ones(size(centroid_position,2),1));
 %fname = imds.Files;
 %clear imds
 %fname = cell2table(fname);
 %save fname
 %fcoord = cell2table(centroid_pos_char);
 %save fcoord
-f = table(imds.Files,centroid_pos_cell);
+f = table(imds.Files(1:10),centroid_pos_cell'); %transposed so that each are nx1 shaped
 
 %%
 data = load('fasterRCNNVehicleTrainingData.mat');
