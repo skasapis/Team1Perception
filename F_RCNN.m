@@ -148,7 +148,7 @@ options = [
 %%
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
+doTrainingAndEval = true;
 
 if doTrainingAndEval
     % Set random seed to ensure example training reproducibility.
@@ -171,11 +171,13 @@ I = imread(testData.imageFilename{15});
 
 % Run the detector.
 [bboxes,scores] = detect(detector,I);
+
+
 %%
 % Annotate detections in the image.
 I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
-figure
-imshow(I)
+% % % figure
+% % % imshow(I)
 
 if doTrainingAndEval
     % Run detector on each image in the test set and collect results.
@@ -208,16 +210,21 @@ expectedResults = testData(:, 2:end);
 [ap, recall, precision] = evaluateDetectionPrecision(results, expectedResults);
 %%
 % Plot precision/recall curve
-figure
-plot(recall,precision)
-xlabel('Recall')
-ylabel('Precision')
-grid on
-title(sprintf('Average Precision = %.2f', ap))
+% % % figure
+% % % plot(recall,precision)
+% % % xlabel('Recall')
+% % % ylabel('Precision')
+% % % grid on
+% % % title(sprintf('Average Precision = %.2f', ap))
 
-%Functions
+
+
+
+
+
+%% ///////////////////// SUPPLEMENTARY FUNCTIONS /////////////////////
 function data = read_bin(file_name)
-id = fopen(file_name, 'r');
-data = fread(id, inf, 'single');
-fclose(id);
+    id = fopen(file_name, 'r');
+    data = fread(id, inf, 'single');
+    fclose(id);
 end

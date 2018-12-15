@@ -1,13 +1,13 @@
-function [bboxAll] = BBox_Code()
+function [bboxAll] = BBox_Code(numTrain)
 
 files = dir('deploy/trainval/*/*_image.jpg');
 
-for idx = 1:10%numel(files)
+for idx = 1:numTrain %numel(files)
 
     snapshot = [files(idx).folder, '/', files(idx).name];
     disp(snapshot)
 
-    img = imread(snapshot);
+%     img = imread(snapshot);
 
     xyz = read_bin(strrep(snapshot, '_image.jpg', '_cloud.bin'));
     xyz = reshape(xyz, [], 3)';
@@ -49,6 +49,7 @@ for idx = 1:10%numel(files)
         x_length = TRx-X;
         y_length = Y-BLy;
 
+        Y = Y-y_length;
         % upper left corner (X,Y)
         bboxNew = [X,Y,x_length,y_length];
     end
