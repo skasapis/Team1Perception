@@ -18,7 +18,7 @@ numTrain = 500;
 bbox = BBox_Code(numTrain);
 % transposed so that each are nx1 shaped
 vehicle = bbox';
-imageFilename = imds.Files(1:numTrain);
+imageFilename = trainds.Files(1:numTrain);
 trainingData = table(imageFilename, vehicle);
 
 % vehicleDataset.Var1 is their equivilent of vehicleDataset.imageFilename
@@ -152,25 +152,10 @@ disp('NETWORK TRAINED');
 
 
 
-%% TEST TRAINED NETWORK
-% Read a test image.
-I = imread(testData.Files{41});
-
-% Run the detector.
-[bboxes,scores] = detect(detector,I);
-
-% Annotate detections in the image.
-I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
-% save image
-imwrite(I, 'detectTest.png')
-
-disp('SINGLE TEST IMAGE DETECTION COMPLETE')
-
-
-
-%% RUN DETECTOR ON ALL TEST IMAGES
+%% RUN DETECTOR
 detectAll = 0;
 if detectAll == 1
+    %% TEST TRAINED NETWORK ON ALL TEST IMAGES
     % Annotate detections in the image.
     I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
     % % % figure
@@ -200,7 +185,7 @@ if detectAll == 1
         results = data.results;
     end
 
-    %% Extract expected bounding box locations from test data.
+    % Extract expected bounding box locations from test data.
     expectedResults = testData(:, 2:end);
 
     % Evaluate the object detector using Average Precision metric.
@@ -217,6 +202,20 @@ if detectAll == 1
 
     disp('TEST IMAGE DETECTION COMPLETE')
     
+else
+    %% TEST TRAINED NETWORK ON SINGLE IMAGE
+    % Read a test image.
+    I = imread(testData.Files{41});
+
+    % Run the detector.
+    [bboxes,scores] = detect(detector,I);
+
+    % Annotate detections in the image.
+    I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
+    % save image
+    imwrite(I, 'detectTest.png')
+
+    disp('SINGLE TEST IMAGE DETECTION COMPLETE')
 end % end of detectAll == true
 
 
