@@ -14,7 +14,7 @@ bbds = dir('deploy/trainval/*/*_bbox.bin'); %run from inside the folder, easier 
 % imds = imageDatastore('deploy/trainval/*/*_image.jpg');
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 5;
+numTrain = 500;
 bbox = BBox_Code(numTrain);
 % transposed so that each are nx1 shaped
 vehicle = bbox';
