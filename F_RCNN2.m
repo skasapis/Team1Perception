@@ -134,7 +134,7 @@ options = [
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = true;
+doTrainingAndEval = false;
 loadPrev = false;
 
 tic
