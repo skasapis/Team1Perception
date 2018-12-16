@@ -198,13 +198,14 @@ else % detectAll == false
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
     
     % CROP IMAGE AND SAVE TO NEW FOLDER
-    xL = floor(detbbox(1))
-    xR = floor(detbbox(1)+detbbox(3))
-    yT = floor(detbbox(2))
-    yB = floor((detbbox(2)+detbbox(4))/3)
+    maxScore = 1;
+    xL = floor(detbbox(maxScore,1))
+    xR = floor(detbbox(maxScore,1)+detbbox(maxScore,3))
+    yT = floor(detbbox(maxScore,2))
+    yB = floor((detbbox(maxScore,2)+detbbox(maxScore,4))/3)
     size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
-    cropI = imcrop(I, detbbox*3)
+    cropI = imcrop(I, detbbox(1,1:4))
     imwrite(cropI, 'detectCrop.png')
     
 %     name = testds.Files(idx);
