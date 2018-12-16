@@ -135,7 +135,7 @@ options = [
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
 doTrainingAndEval = false;
-loadPrev = false;
+loadPrev = true;
 
 tic
 if doTrainingAndEval
@@ -155,6 +155,7 @@ elseif loadPrev
     load detector
 else
     % Load pretrained detector for the example.
+    data = load('fasterRCNNVehicleTrainingData.mat');
     detector = data.detector;
 end
 disp('DETECTOR TRAINED');
@@ -164,9 +165,9 @@ toc
 
 
 %% RUN DETECTOR
-detectAll = 0;
+detectAll = false;
 tic
-if detectAll == 1
+if detectAll
     %% TEST TRAINED NETWORK ON ALL TEST IMAGES
     % Annotate detections in the image.
     I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
@@ -214,10 +215,12 @@ if detectAll == 1
 
     disp('TEST IMAGE DETECTION COMPLETE')
     
-else
+    
+else % detectAll == false
     %% TEST TRAINED NETWORK ON SINGLE IMAGE
     % Read a test image.
-    I = imread(testData.Files{41});
+    idx = 41;
+    I = imread(testData.Files{idx});
 
     % Run the detector.
     [bboxes,scores] = detect(detector,I);
@@ -228,22 +231,25 @@ else
     imwrite(I, 'detectTest.png')
 
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
-end % end of detectAll == true
+end
 toc
 
 %% CROP IMAGE AND SAVE TO NEW FOLDER
 if detectAll == true
-    numTest = numel(testds.Files);
+    testIdx = 1:numel(testds.Files);
 else
-    numTest = 1;
+    testIdx = 41;
 end
 
-for idx = 1:numTest
+for idx = testIdx
     name = testds.Files(idx);
     name = name{1}(end-50:end);
     filename = ['croppedTest/', name];
     imwrite(I, filename)
 end
+
+
+
 
 
 %% ///////////////////// SUPPLEMENTARY FUNCTIONS /////////////////////
