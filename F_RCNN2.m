@@ -76,18 +76,13 @@ toc
 
 resultsStruct = struct([]);
 tic
-for idx = [41 108 116]%1:height(testData) 
+for idx = [41 107 108 116 117 118 119]%1:height(testData) 
 
     % Read the image.
     I = imread(testds.Files{idx});
 
     % Run the detector.
     [detbbox, scores, labels] = detect(cdetector,I)
-
-    % Collect the results.
-    resultsStruct(idx).Boxes = detbbox;
-    resultsStruct(idx).Scores = scores;
-    resultsStruct(idx).Labels = labels;
 
     % crop image and save
     if numel(detbbox < 4) == 0
@@ -111,9 +106,6 @@ for idx = [41 108 116]%1:height(testData)
     imwrite(cropI, filename)
 
 end
-
-% Convert the results into a table.
-results = struct2table(resultsStruct);
 
 disp('TEST IMAGE DETECTION COMPLETE')
 toc
