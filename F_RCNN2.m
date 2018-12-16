@@ -40,7 +40,7 @@ trainingData = table(imageFilename, vehicle);
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
+doTrainingAndEval = true;
 loadPrev = false;
 
 tic
@@ -50,9 +50,10 @@ if doTrainingAndEval
      
     % Train Faster R-CNN detector. Select a BoxPyramidScale of 1.2 to allow
     % for finer resolution for multiscale object detection.
-    [layers, options] = buildRCNN() % in function at bottom to clean code
+    numTrain = width(trainingData);
+    [layers, options] = buildRCNN(numTrain) % in function at bottom to clean code
     
-    cdetector = trainFasterRCNNObjectDetector(trainingData, layers, options); %, ...
+    cdetector = trainFasterRCNNObjectDetector(trainingData, 'googlenet', options); %, ...
 %         'NegativeOverlapRange', [0 0.3], ...
 %         'PositiveOverlapRange', [0.6 1], ...
 %         'BoxPyramidScale', 1.2);
@@ -92,18 +93,18 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
         maxScoreIdx = 1;
         % draw box and save image
         I = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
-        imwrite(I, 'detectTest.png');
-        %imshow(I)
+        %imwrite(I, 'detectTest.png');
+        imshow(I)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
-        imwrite(cropI, 'detectCrop.png');
-        %imshow(cropI)
+        %imwrite(cropI, 'detectCrop.png');
+        imshow(cropI)
     end
 
     name = testds.Files(idx);
     name = name{1}(end-50:end);
     filename = ['deployCropped/', name]
-    imwrite(cropI, filename)
+    %imwrite(cropI, filename)
 
 end
 
@@ -123,7 +124,7 @@ function data = read_bin(file_name)
 end
 
 
-function [layers, options] = buildRCNN()
+function [layers, options] = buildRCNN(numTrain)
 
     % Create image input layer.
     inputLayer = imageInputLayer([32 32 3]);
@@ -151,7 +152,7 @@ function [layers, options] = buildRCNN()
         % produce outputs that can be used to measure whether the input image
         % belongs to one of the object classes or background. This measurement
         % is made using the subsequent loss layers.
-        fullyConnectedLayer(width(trainingData))
+        fullyConnectedLayer(numTrain)
         % Add the softmax loss layer and classification layer. 
         softmaxLayer()
         classificationLayer()
@@ -170,7 +171,7 @@ function [layers, options] = buildRCNN()
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
         'MaxEpochs', 3, ...
-        'MiniBatchSize', 10, ...
+        'MiniBatchSize', 1, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
         'VerboseFrequency', 10);
