@@ -164,10 +164,10 @@ if detectAll
         I = imread(testData.Files{idx});
 
         % Run the detector.
-        [detbboxes, scores, labels] = detect(detector, I);
+        [detbbox, scores, labels] = detect(detector, I);
 
         % Collect the results.
-        resultsStruct(idx).Boxes = detbboxes;
+        resultsStruct(idx).Boxes = detbbox;
         resultsStruct(idx).Scores = scores;
         resultsStruct(idx).Labels = labels;
     end
@@ -184,23 +184,24 @@ else % detectAll == false
     I = imread(testds.Files{idx});
 
     % Run the detector.
-    [detbboxes,scores] = detect(detector,I);
+    [detbbox,scores] = detect(detector,I);
 
     % Annotate detections in the image.
     %I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
-    I = insertShape(I, 'Rectangle', detbboxes);
+    I = insertShape(I, 'Rectangle', detbbox);
     % save image
     imwrite(I, 'detectTest.png')
 
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
     
     % CROP IMAGE AND SAVE TO NEW FOLDER
-    xL = floor(detbboxes(1))
-    xR = floor(detbboxes(1)+detbboxes(3))
-    yT = floor(detbboxes(2))
-    yB = floor((detbboxes(2)+detbboxes(4))/3)
+    xL = floor(detbbox(1))
+    xR = floor(detbbox(1)+detbbox(3))
+    yT = floor(detbbox(2))
+    yB = floor((detbbox(2)+detbbox(4))/3)
     size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
+    cropI = imcrop(I, detbbox)
     imwrite(cropI, 'detectCrop.png')
     
 %     name = testds.Files(idx);
