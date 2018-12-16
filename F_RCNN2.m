@@ -201,12 +201,12 @@ else % detectAll == false
     yB = floor((detbboxes(2)+detbboxes(4))/3)
     size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
-    
-    name = testds.Files(idx);
-    name = name{1}(end-50:end);
-    filename = ['deployCropped/', name]
-    imwrite(cropI, filename)
     imwrite(cropI, 'detectCrop.png')
+    
+%     name = testds.Files(idx);
+%     name = name{1}(end-50:end);
+%     filename = ['deployCropped/', name]
+%     imwrite(cropI, filename)
     
 end
 toc
