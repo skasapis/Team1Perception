@@ -2,14 +2,17 @@
 %https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html
 %https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html#bvkk009-1-trainingData
 
+
+% will maybe need a method to add the images that aren't assigned a bounding box?
+
+
 %% Load vehicle data set
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
 numTrain = 5;
 bbox = BBox_Code(numTrain);
-% transposed so that each are nx1 shaped
-vehicle = bbox';
+vehicle = bbox';% transposed so that each are nx1 shaped
 imageFilename = trainds.Files(1:numTrain);
 trainingData = table(imageFilename, vehicle);
 
@@ -116,7 +119,7 @@ options = [
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
+doTrainingAndEval = true;
 loadPrev = true;
 
 tic
@@ -126,13 +129,13 @@ if doTrainingAndEval
     
     % Train Faster R-CNN detector. Select a BoxPyramidScale of 1.2 to allow
     % for finer resolution for multiscale object detection.
-    detector = trainFasterRCNNObjectDetector(trainingData, layers, optionsStage1);%, ...
+    custDetector = trainFasterRCNNObjectDetector(trainingData, layers, optionsStage1); %, ...
 %         'NegativeOverlapRange', [0 0.3], ...
 %         'PositiveOverlapRange', [0.6 1], ...
 %         'BoxPyramidScale', 1.2);
 %         'NumRegionsToSample', [256 128 256 128], ...
     disp('DETECTOR TRAINED');
-    save detector
+    save custDetector
 
 elseif loadPrev
     load detector
@@ -187,26 +190,25 @@ else % detectAll == false
     I = imread(testds.Files{idx});
 
     % Run the detector.
-    [detbbox,scores] = detect(detector,I)
-
+    [detbbox,scores] = custDetect(detector,I)
+    disp('SINGLE TEST IMAGE DETECTION COMPLETE')
+    
     % Annotate detections in the image.
     %I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
     I = insertShape(I, 'Rectangle', detbbox);
     % save image
-    imwrite(I, 'detectTest.png')
-
-    disp('SINGLE TEST IMAGE DETECTION COMPLETE')
+    imwrite(I, 'detectTest.png');
     
     % CROP IMAGE AND SAVE TO NEW FOLDER
     maxScore = 1;
-    xL = floor(detbbox(maxScore,1))
-    xR = floor(detbbox(maxScore,1)+detbbox(maxScore,3))
-    yT = floor(detbbox(maxScore,2))
-    yB = floor((detbbox(maxScore,2)+detbbox(maxScore,4))/3)
-    size(I)
-    cropI = I(yT:yB, xL:xR, 1:3);
-    cropI = imcrop(I, detbbox(1,1:4))
-    imwrite(cropI, 'detectCrop.png')
+%     xL = floor(detbbox(maxScore,1))
+%     xR = floor(detbbox(maxScore,1)+detbbox(maxScore,3))
+%     yT = floor(detbbox(maxScore,2))
+%     yB = floor((detbbox(maxScore,2)+detbbox(maxScore,4))/3)
+%     size(I)
+%     cropI = I(yT:yB, xL:xR, 1:3);
+    cropI = imcrop(I, detbbox(max,1:4));
+    imwrite(cropI, 'detectCrop.png');
     
 %     name = testds.Files(idx);
 %     name = name{1}(end-50:end);
