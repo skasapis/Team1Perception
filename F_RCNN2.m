@@ -8,10 +8,10 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 38;
-bbox = BBox_Code(numTrain);
+numTrain = 500;
+[bbox, trainIdx] = BBox_Code(numTrain);
 vehicle = bbox';% transposed so that each are nx1 shaped
-imageFilename = trainds.Files(1:numTrain);
+imageFilename = trainds.Files(trainIdx);
 trainingData = table(imageFilename, vehicle);
 
 
@@ -40,7 +40,7 @@ trainingData = table(imageFilename, vehicle);
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = true;
+doTrainingAndEval = false;
 loadPrev = false;
 
 tic
@@ -69,8 +69,8 @@ if doTrainingAndEval
         'SmallestImageDimension', 227, ...
         'NegativeOverlapRange', [0 0.3], ...
         'PositiveOverlapRange', [0.6 1], ...
-        'BoxPyramidScale', 1.2, ...
-        'NumRegionsToSample', [256 128 256 128]);
+        'BoxPyramidScale', 1.2);%, ...
+%         'NumRegionsToSample', [256 128 256 128]);
     disp('DETECTOR TRAINED');
     save cdetector
 
@@ -103,7 +103,7 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
         cropI = I;
         imshow(cropI)
     else       
-        maxScoreIdx = 1;
+        [mx, maxScoreIdx] = max(scores);
         % draw box and save image
         I = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
         imwrite(I, 'detectTest.png');
@@ -111,7 +111,7 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
         imshow(I)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
-        %imwrite(cropI, 'detectCrop.png');
+        imwrite(cropI, 'detectCrop.png');
         figure(2)
         imshow(cropI)
     end
@@ -119,7 +119,7 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
     name = testds.Files(idx);
     name = name{1}(end-50:end);
     filename = ['deployCropped/', name]
-%     imwrite(cropI, filename)
+    imwrite(cropI, filename)
 
 end
 
@@ -186,7 +186,7 @@ function [layers, options] = buildRCNN(numTrain)
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 1, ...
+        'MiniBatchSize', 5, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
         'VerboseFrequency', 50);
@@ -194,7 +194,7 @@ function [layers, options] = buildRCNN(numTrain)
     % Options for step 2.
     optionsStage2 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 1, ...
+        'MiniBatchSize', 5, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
         'VerboseFrequency', 50);
@@ -202,7 +202,7 @@ function [layers, options] = buildRCNN(numTrain)
     % Options for step 3.
     optionsStage3 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 1, ...
+        'MiniBatchSize', 5, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
         'VerboseFrequency', 50);
@@ -210,7 +210,7 @@ function [layers, options] = buildRCNN(numTrain)
     % Options for step 4.
     optionsStage4 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 1, ...
+        'MiniBatchSize', 5, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
         'VerboseFrequency', 50);

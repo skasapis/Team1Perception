@@ -1,4 +1,4 @@
-function [bboxAll] = BBox_Code(numTrain)
+function [bboxAll, trainIdx] = BBox_Code(numTrain)
 
 files = dir('deploy/trainval/*/*_image.jpg');
 
@@ -8,6 +8,8 @@ goodCarsFile = [54 74 80 88 89 92 95 100 103 107 109 110, ...
                 6 7 8 12 48 49 85 87 88 89 103 104 105 107 109 111 122 123 184 194 199 200 213 220, 232];
 goodCarsFile = goodCarsFile + goodCarsFolder - 1;
 
+count = 1;
+skip = false;
 for idx = 1:numTrain %numel(files)
 
     if numTrain < 39
@@ -32,6 +34,7 @@ for idx = 1:numTrain %numel(files)
         disp('[*] no bbox found.')
         bbox = single([]);
         bboxNew = single([]);
+        skip = true
     end
     bbox = reshape(bbox, 11, [])';
 
@@ -64,7 +67,15 @@ for idx = 1:numTrain %numel(files)
         % upper left corner (X,Y)
         bboxNew = [X,Y,x_length,y_length];
     end
-    bboxAll{idx} = bboxNew;
+    
+    if skip == true
+        % dont include in train set because has no car
+    else
+        bboxAll{count} = bboxNew;
+        trainIdx(count) = idx;
+        count = count + 1;
+    end
+    idx = idx + 1;
 end
 % return
 end
