@@ -6,7 +6,7 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 500;
+numTrain = 5;
 bbox = BBox_Code(numTrain);
 % transposed so that each are nx1 shaped
 vehicle = bbox';
@@ -198,7 +198,7 @@ else % detectAll == false
     xL = floor(detbboxes(1))
     xR = floor(detbboxes(1)+detbboxes(3))
     yT = floor(detbboxes(2))
-    yB = floor(detbboxes(2)+detbboxes(4))
+    yB = floor((detbboxes(2)+detbboxes(4))/3)
     size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
     
