@@ -220,7 +220,7 @@ else % detectAll == false
     %% TEST TRAINED NETWORK ON SINGLE IMAGE
     % Read a test image.
     idx = 41;
-    I = imread(testData.Files{idx});
+    I = imread(testds.Files{idx});
 
     % Run the detector.
     [bboxes,scores] = detect(detector,I);
