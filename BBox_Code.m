@@ -2,10 +2,21 @@ function [bboxAll] = BBox_Code(numTrain)
 
 files = dir('deploy/trainval/*/*_image.jpg');
 
+goodCarsFolder = [ones(1,12), 111, 422*ones(1,25)];
+goodCarsFile = [54 74 80 88 89 92 95 100 103 107 109 110, ...
+                1, ...
+                6 7 8 12 48 49 85 87 88 89 103 104 105 107 109 111 122 123 184 194 199 200 213 220, 232];
+goodCarsFile = goodCarsFile + goodCarsFolder - 1;
+
 for idx = 1:numTrain %numel(files)
 
-    snapshot = [files(idx).folder, '/', files(idx).name];
-    disp(snapshot)
+    if numTrain < 39
+        snapshot = [files(goodCarsFolder(idx)).folder, '/', files(goodCarsFile(idx)).name];
+        disp(snapshot)
+    else
+        snapshot = [files(idx).folder, '/', files(idx).name];
+        disp(snapshot)
+    end
 
 %     img = imread(snapshot);
 
