@@ -195,15 +195,15 @@ else % detectAll == false
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
     
     % CROP IMAGE AND SAVE TO NEW FOLDER
-    xL = floor(detbboxes(1));
-    xR = floor(detbboxes(1)+detbboxes(3));
-    yT = floor(detbboxes(2));
-    yB = floor(detbboxes(2)+detbboxes(4));
+    xL = floor(detbboxes(1))
+    xR = floor(detbboxes(1)+detbboxes(3))
+    yT = floor(detbboxes(2))
+    yB = floor(detbboxes(2)+detbboxes(4))
     cropI = I(yT:yB, xL:xR, 1:3);
     
     name = testds.Files(idx);
     name = name{1}(end-50:end);
-    filename = ['deployCropped/', name];
+    filename = ['deployCropped/', name]
     imwrite(cropI, filename)
     imwrite(cropI, 'detectCrop.png')
     
