@@ -1,8 +1,8 @@
-%https://www.mathworks.com/help/vision/examples/object-detection-using-faster-r-cnn-deep-learning.html
-%https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html
-%https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html#bvkk009-1-trainingData
-
-
+% https://www.mathworks.com/help/vision/examples/object-detection-using-faster-r-cnn-deep-learning.html
+% https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html
+% https://www.mathworks.com/help/vision/ref/trainfasterrcnnobjectdetector.html#bvkk009-1-trainingData
+% https://www.mathworks.com/help/vision/ref/fasterrcnnobjectdetector.detect.html
+% https://www.mathworks.com/help/vision/ug/faster-r-cnn-basics.html
 
 %% Load vehicle data set
 
@@ -53,7 +53,10 @@ if doTrainingAndEval
     numTrain = width(trainingData);
     [layers, options] = buildRCNN(numTrain) % in function at bottom to clean code
     
-    cdetector = trainFasterRCNNObjectDetector(trainingData, 'googlenet', options); %, ...
+    gnet = googlenet;
+    layers = gnet.Layers;
+    cdetector = trainFasterRCNNObjectDetector(trainingData, layers, options); %, ...
+    % cdetector = trainFasterRCNNObjectDetector(trainingData, 'googlenet', options); %, ...
 %         'NegativeOverlapRange', [0 0.3], ...
 %         'PositiveOverlapRange', [0.6 1], ...
 %         'BoxPyramidScale', 1.2);
@@ -73,9 +76,8 @@ end
 toc
 
 
-%% TEST DETECTOR ON TEST IMAGES
+%% APPLY DETECTOR TO TEST IMAGES
 
-resultsStruct = struct([]);
 tic
 for idx = [41 107 108 116 117 118 119]%1:height(testData) 
 
@@ -89,11 +91,12 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
     if numel(detbbox < 4) == 0
         % save original image -- no cropping
         cropI = I;
+        imshow(cropI)
     else       
         maxScoreIdx = 1;
         % draw box and save image
         I = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
-        %imwrite(I, 'detectTest.png');
+        imwrite(I, 'detectTest.png');
         imshow(I)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
@@ -104,7 +107,7 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
     name = testds.Files(idx);
     name = name{1}(end-50:end);
     filename = ['deployCropped/', name]
-    %imwrite(cropI, filename)
+    imwrite(cropI, filename)
 
 end
 
