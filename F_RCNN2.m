@@ -10,7 +10,7 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 10;
+numTrain = 500;
 bbox = BBox_Code(numTrain);
 vehicle = bbox';% transposed so that each are nx1 shaped
 imageFilename = trainds.Files(1:numTrain);
@@ -40,45 +40,46 @@ trainingData = table(imageFilename, vehicle);
 
 %% BUILD NETWORK
 % Create image input layer.
-% % % inputLayer = imageInputLayer([32 32 3]);
-% % % 
-% % % % Define the convolutional layer parameters.
-% % % filterSize = [3 3];
-% % % numFilters = 32;
-% % % 
-% % % % Create the middle layers.
-% % % middleLayers = [            
-% % %     convolution2dLayer(filterSize, numFilters, 'Padding', 1)   
-% % %     reluLayer()
-% % %     convolution2dLayer(filterSize, numFilters, 'Padding', 1)  
-% % %     reluLayer() 
-% % %     maxPooling2dLayer(3, 'Stride',2)    
-% % %     ];
-% % % 
-% % % finalLayers = [
-% % %     % Add a fully connected layer with 64 output neurons. The output size
-% % %     % of this layer will be an array with a length of 64.
-% % %     fullyConnectedLayer(64)
-% % %     % Add a ReLU non-linearity.
-% % %     reluLayer()
-% % %     % Add the last fully connected layer. At this point, the network must
-% % %     % produce outputs that can be used to measure whether the input image
-% % %     % belongs to one of the object classes or background. This measurement
-% % %     % is made using the subsequent loss layers.
-% % %     fullyConnectedLayer(width(trainingData))
-% % %     % Add the softmax loss layer and classification layer. 
-% % %     softmaxLayer()
-% % %     classificationLayer()
-% % % ];
-% % % 
-% % % layers = [
-% % %     inputLayer
-% % %     middleLayers
-% % %     finalLayers
-% % %     ]
+inputLayer = imageInputLayer([32 32 3]);
+
+% Define the convolutional layer parameters.
+filterSize = [3 3];
+numFilters = 32;
+
+% Create the middle layers.
+middleLayers = [            
+    convolution2dLayer(filterSize, numFilters, 'Padding', 1)   
+    reluLayer()
+    convolution2dLayer(filterSize, numFilters, 'Padding', 1)  
+    reluLayer() 
+    maxPooling2dLayer(3, 'Stride',2)    
+    ];
+
+finalLayers = [
+    % Add a fully connected layer with 64 output neurons. The output size
+    % of this layer will be an array with a length of 64.
+    fullyConnectedLayer(64)
+    % Add a ReLU non-linearity.
+    reluLayer()
+    % Add the last fully connected layer. At this point, the network must
+    % produce outputs that can be used to measure whether the input image
+    % belongs to one of the object classes or background. This measurement
+    % is made using the subsequent loss layers.
+    fullyConnectedLayer(width(trainingData))
+    % Add the softmax loss layer and classification layer. 
+    softmaxLayer()
+    classificationLayer()
+];
+
+layers = [
+    inputLayer
+    middleLayers
+    finalLayers
+    ]
 
 % use googlenet for transfer learning rather than train from scratch
-gnet=googlenet;
+% gnet=googlenet;
+% lgraph = layerGraph(net);
 
 % Options for step 1.
 optionsStage1 = trainingOptions('sgdm', ...
@@ -86,7 +87,7 @@ optionsStage1 = trainingOptions('sgdm', ...
     'MiniBatchSize', 10, ...
     'InitialLearnRate', 1e-3, ...
     'CheckpointPath', tempdir, ...
-    'VerboseFrequency', 200);
+    'VerboseFrequency', 50);
 
 % Options for step 2.
 optionsStage2 = trainingOptions('sgdm', ...
@@ -110,7 +111,7 @@ optionsStage4 = trainingOptions('sgdm', ...
     'MiniBatchSize', 1, ...
     'InitialLearnRate', 1e-3, ...
     'CheckpointPath', tempdir, ...
-    'VerboseFrequency', 200);
+    'VerboseFrequency', 50);
 
 options = [
     optionsStage1
@@ -132,7 +133,7 @@ if doTrainingAndEval
     
     % Train Faster R-CNN detector. Select a BoxPyramidScale of 1.2 to allow
     % for finer resolution for multiscale object detection.
-    custDetector = trainFasterRCNNObjectDetector(trainingData, gnet, optionsStage1); %, ...
+    custDetector = trainFasterRCNNObjectDetector(trainingData, layers, optionsStage1); %, ...
 %         'NegativeOverlapRange', [0 0.3], ...
 %         'PositiveOverlapRange', [0.6 1], ...
 %         'BoxPyramidScale', 1.2);
