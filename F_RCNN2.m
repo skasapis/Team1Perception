@@ -21,16 +21,19 @@ trainingData = table(imageFilename, vehicle);
 % % % trainingData(1:4,:)
 
 % Read one of the images.
-% % % I = imread(trainingData.imageFilename{5});
-% % % 
-% % % % Insert the ROI labels.
-% % % I = insertShape(I, 'Rectangle', trainingData.vehicle{5});
-% % % 
-% % % % Resize and display image.
-% % % I = imresize(I,3);
-% % % figure(1)
-% % % imshow(I)
-
+% % I = imread(trainingData.imageFilename{5});
+% % 
+% % % Insert the ROI labels.
+% % I = insertShape(I, 'Rectangle', trainingData.vehicle{5});
+% % 
+% % % Resize and display image.
+% % I = imresize(I,3);
+% % figure(1)
+% % imshow(I)
+% % 
+% % cropI = imcrop(I, trainingData.vehicle{5}*3);
+% % figure(2)
+% % imshow(cropI)
 
 %% BUILD NETWORK
 % Create image input layer.
@@ -184,7 +187,7 @@ else % detectAll == false
     I = imread(testds.Files{idx});
 
     % Run the detector.
-    [detbbox,scores] = detect(detector,I);
+    [detbbox,scores] = detect(detector,I)
 
     % Annotate detections in the image.
     %I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
@@ -201,7 +204,7 @@ else % detectAll == false
     yB = floor((detbbox(2)+detbbox(4))/3)
     size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
-    cropI = imcrop(I, detbbox)
+    cropI = imcrop(I, detbbox*3)
     imwrite(cropI, 'detectCrop.png')
     
 %     name = testds.Files(idx);
