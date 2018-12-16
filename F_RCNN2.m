@@ -9,7 +9,7 @@
 %dat = data.detector;
 %lay = data.layers;
 %clear data
-bbds = dir('deploy/trainval/*/*_bbox.bin'); %run from inside the folder, easier to make consistent among all users
+% bbds = dir('deploy/trainval/*/*_bbox.bin'); %run from inside the folder, easier to make consistent among all users
 
 % imds = imageDatastore('deploy/trainval/*/*_image.jpg');
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
@@ -94,31 +94,35 @@ layers = [
 
 % Options for step 1.
 optionsStage1 = trainingOptions('sgdm', ...
-    'MaxEpochs', 6, ...
-    'MiniBatchSize', 100, ...
+    'MaxEpochs', 5, ...
+    'MiniBatchSize', 10, ...
     'InitialLearnRate', 1e-3, ...
-    'CheckpointPath', tempdir);
+    'CheckpointPath', tempdir, ...
+    'VerboseFrequency', 200);
 
 % Options for step 2.
 optionsStage2 = trainingOptions('sgdm', ...
-    'MaxEpochs', 6, ...
-    'MiniBatchSize', 100, ...
+    'MaxEpochs', 5, ...
+    'MiniBatchSize', 10, ...
     'InitialLearnRate', 1e-3, ...
-    'CheckpointPath', tempdir);
+    'CheckpointPath', tempdir, ...
+    'VerboseFrequency', 200);
 
 % Options for step 3.
 optionsStage3 = trainingOptions('sgdm', ...
-    'MaxEpochs', 6, ...
-    'MiniBatchSize', 100, ...
+    'MaxEpochs', 5, ...
+    'MiniBatchSize', 10, ...
     'InitialLearnRate', 1e-3, ...
-    'CheckpointPath', tempdir);
+    'CheckpointPath', tempdir, ...
+    'VerboseFrequency', 200);
 
 % Options for step 4.
 optionsStage4 = trainingOptions('sgdm', ...
-    'MaxEpochs', 6, ...
-    'MiniBatchSize', 100, ...
+    'MaxEpochs', 5, ...
+    'MiniBatchSize', 10, ...
     'InitialLearnRate', 1e-3, ...
-    'CheckpointPath', tempdir);
+    'CheckpointPath', tempdir, ...
+    'VerboseFrequency', 200);
 
 options = [
     optionsStage1
@@ -127,34 +131,41 @@ options = [
     optionsStage4
     ];
 
-%% TRAIN NETWORK
+%% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
 doTrainingAndEval = true;
+loadPrev = false;
 
+tic
 if doTrainingAndEval
     % Set random seed to ensure example training reproducibility.
     rng(0);
     
     % Train Faster R-CNN detector. Select a BoxPyramidScale of 1.2 to allow
     % for finer resolution for multiscale object detection.
-    detector = trainFasterRCNNObjectDetector(trainingData, layers, options, ...
-        'NegativeOverlapRange', [0 0.3], ...
-        'PositiveOverlapRange', [0.6 1], ...
-        'BoxPyramidScale', 1.2);
+    detector = trainFasterRCNNObjectDetector(trainingData, layers, optionsStage1);%, ...
+%         'NegativeOverlapRange', [0 0.3], ...
+%         'PositiveOverlapRange', [0.6 1], ...
+%         'BoxPyramidScale', 1.2);
 %         'NumRegionsToSample', [256 128 256 128], ...
-        
+    save detector
+
+elseif loadPrev
+    load detector
 else
     % Load pretrained detector for the example.
     detector = data.detector;
 end
+disp('DETECTOR TRAINED');
+toc
 
-disp('NETWORK TRAINED');
 
 
 
 %% RUN DETECTOR
 detectAll = 0;
+tic
 if detectAll == 1
     %% TEST TRAINED NETWORK ON ALL TEST IMAGES
     % Annotate detections in the image.
@@ -218,10 +229,21 @@ else
 
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
 end % end of detectAll == true
+toc
 
+%% CROP IMAGE AND SAVE TO NEW FOLDER
+if detectAll == true
+    numTest = numel(testds.Files);
+else
+    numTest = 1;
+end
 
-
-
+for idx = 1:numTest
+    name = testds.Files(idx);
+    name = name{1}(end-50:end);
+    filename = ['croppedTest/', name];
+    imwrite(I, filename)
+end
 
 
 %% ///////////////////// SUPPLEMENTARY FUNCTIONS /////////////////////
