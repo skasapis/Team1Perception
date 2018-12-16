@@ -199,6 +199,7 @@ else % detectAll == false
     xR = floor(detbboxes(1)+detbboxes(3))
     yT = floor(detbboxes(2))
     yB = floor(detbboxes(2)+detbboxes(4))
+    size(I)
     cropI = I(yT:yB, xL:xR, 1:3);
     
     name = testds.Files(idx);
