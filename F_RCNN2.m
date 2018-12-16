@@ -4,14 +4,6 @@
 
 %% Load vehicle data set
 
-%clc; clear all;
-%data = load('fasterRCNNVehicleTrainingData.mat');
-%dat = data.detector;
-%lay = data.layers;
-%clear data
-% bbds = dir('deploy/trainval/*/*_bbox.bin'); %run from inside the folder, easier to make consistent among all users
-
-% imds = imageDatastore('deploy/trainval/*/*_image.jpg');
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
 numTrain = 500;
@@ -20,9 +12,6 @@ bbox = BBox_Code(numTrain);
 vehicle = bbox';
 imageFilename = trainds.Files(1:numTrain);
 trainingData = table(imageFilename, vehicle);
-
-% vehicleDataset.Var1 is their equivilent of vehicleDataset.imageFilename
-% vehicleDataset.Var2 is their equivilent of vehicleDataset.vehicle
 
 
 %% VALIDATE IMAGE/BOUNDING BOX DATA
@@ -41,11 +30,7 @@ trainingData = table(imageFilename, vehicle);
 % % % I = imresize(I,3);
 % % % figure(1)
 % % % imshow(I)
-%% Split data into a training and test set.
-% idx = floor(0.6 * height(vehicleDataset));
-% trainingData = vehicleDataset(1:idx,:);
-% testData = vehicleDataset(idx:end,:);
-%traininData = vehicleDataset;
+
 
 %% BUILD NETWORK
 % Create image input layer.
@@ -56,31 +41,25 @@ filterSize = [3 3];
 numFilters = 32;
 
 % Create the middle layers.
-middleLayers = [
-                
+middleLayers = [            
     convolution2dLayer(filterSize, numFilters, 'Padding', 1)   
     reluLayer()
     convolution2dLayer(filterSize, numFilters, 'Padding', 1)  
     reluLayer() 
     maxPooling2dLayer(3, 'Stride',2)    
-    
     ];
 
 finalLayers = [
-    
     % Add a fully connected layer with 64 output neurons. The output size
     % of this layer will be an array with a length of 64.
     fullyConnectedLayer(64)
-
     % Add a ReLU non-linearity.
     reluLayer()
-
     % Add the last fully connected layer. At this point, the network must
     % produce outputs that can be used to measure whether the input image
     % belongs to one of the object classes or background. This measurement
     % is made using the subsequent loss layers.
     fullyConnectedLayer(width(trainingData))
-
     % Add the softmax loss layer and classification layer. 
     softmaxLayer()
     classificationLayer()
@@ -149,16 +128,18 @@ if doTrainingAndEval
 %         'PositiveOverlapRange', [0.6 1], ...
 %         'BoxPyramidScale', 1.2);
 %         'NumRegionsToSample', [256 128 256 128], ...
+    disp('DETECTOR TRAINED');
     save detector
 
 elseif loadPrev
     load detector
+    disp('DETECTOR LOADED');
 else
     % Load pretrained detector for the example.
     data = load('fasterRCNNVehicleTrainingData.mat');
     detector = data.detector;
+    disp('BUILT IN DETECTOR LOADED');
 end
-disp('DETECTOR TRAINED');
 toc
 
 
@@ -170,49 +151,29 @@ tic
 if detectAll
     %% TEST TRAINED NETWORK ON ALL TEST IMAGES
     % Annotate detections in the image.
-    I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
+    % % %     I = insertObjectAnnotation(I,'rectangle',detbboxes,scores);
     % % % figure
     % % % imshow(I)
 
-    if doTrainingAndEval
-        % Run detector on each image in the test set and collect results.
-        resultsStruct = struct([]);
-        for i = 1:height(testData)
 
-            % Read the image.
-            I = imread(testData.Files{i});
+    % Run detector on each image in the test set and collect results.
+    resultsStruct = struct([]);
+    for idx = 1:height(testData)
 
-            % Run the detector.
-            [bboxes, scores, labels] = detect(detector, I);
+        % Read the image.
+        I = imread(testData.Files{idx});
 
-            % Collect the results.
-            resultsStruct(i).Boxes = bboxes;
-            resultsStruct(i).Scores = scores;
-            resultsStruct(i).Labels = labels;
-        end
+        % Run the detector.
+        [detbboxes, scores, labels] = detect(detector, I);
 
-        % Convert the results into a table.
-        results = struct2table(resultsStruct);
-    else
-        % Load results from disk.
-        results = data.results;
+        % Collect the results.
+        resultsStruct(idx).Boxes = detbboxes;
+        resultsStruct(idx).Scores = scores;
+        resultsStruct(idx).Labels = labels;
     end
 
-    % Extract expected bounding box locations from test data.
-    expectedResults = testData(:, 2:end);
-
-    % Evaluate the object detector using Average Precision metric.
-    [ap, recall, precision] = evaluateDetectionPrecision(results, expectedResults);
-
-    % Plot precision/recall curve
-    figure(2)
-    plot(recall,precision)
-    xlabel('Recall')
-    ylabel('Precision')
-    grid on
-    title(sprintf('Average Precision = %.2f', ap))
-    print('Precision', '-dpng')
-
+    % Convert the results into a table.
+    results = struct2table(resultsStruct);
     disp('TEST IMAGE DETECTION COMPLETE')
     
     
@@ -223,30 +184,31 @@ else % detectAll == false
     I = imread(testds.Files{idx});
 
     % Run the detector.
-    [bboxes,scores] = detect(detector,I);
+    [detbboxes,scores] = detect(detector,I);
 
     % Annotate detections in the image.
-    I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
+    %I = insertObjectAnnotation(I,'rectangle',bboxes,scores);
+    I = insertShape(I, 'Rectangle', detbboxes);
     % save image
     imwrite(I, 'detectTest.png')
 
     disp('SINGLE TEST IMAGE DETECTION COMPLETE')
-end
-toc
-
-%% CROP IMAGE AND SAVE TO NEW FOLDER
-if detectAll == true
-    testIdx = 1:numel(testds.Files);
-else
-    testIdx = 41;
-end
-
-for idx = testIdx
+    
+    % CROP IMAGE AND SAVE TO NEW FOLDER
+    xL = 3*floor(detbboxes(1));
+    xR = 3*floor(detbboxes(1)+detbboxes(3));
+    yT = 3*floor(detbboxes(2));
+    yB = 3*floor(detbboxes(2)+detbboxes(4));
+    cropI = I(yT:yB, xL:xR, 1:3);
+    
     name = testds.Files(idx);
     name = name{1}(end-50:end);
-    filename = ['croppedTest/', name];
-    imwrite(I, filename)
+    filename = ['deployCropped/', name];
+    imwrite(cropI, filename)
+    imwrite(cropI, 'detectCrop.png')
+    
 end
+toc
 
 
 
