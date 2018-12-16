@@ -50,17 +50,27 @@ if doTrainingAndEval
      
     % Train Faster R-CNN detector. Select a BoxPyramidScale of 1.2 to allow
     % for finer resolution for multiscale object detection.
-    numTrain = width(trainingData);
-    [layers, options] = buildRCNN(numTrain) % in function at bottom to clean code
     
-    gnet = googlenet;
-    layers = gnet.Layers;
-    cdetector = trainFastRCNNObjectDetector(trainingData, layers, options); %, ...
-    % cdetector = trainFasterRCNNObjectDetector(trainingData, 'googlenet', options); %, ...
-%         'NegativeOverlapRange', [0 0.3], ...
-%         'PositiveOverlapRange', [0.6 1], ...
-%         'BoxPyramidScale', 1.2);
-%         'NumRegionsToSample', [256 128 256 128], ...
+    % OPTION 1:
+%     numTrain = width(trainingData);
+%     [layers, options] = buildRCNN(numTrain) % in function at bottom to clean code
+    
+    % OPTION 2:
+%     gnet = googlenet;
+%     layers = gnet.Layers;
+    
+    % OPTION 3:
+    data = load('fasterRCNNVehicleTrainingData.mat');
+    detector = data.detector;
+    numTrain = width(trainingData);
+    [~, options] = buildRCNN(numTrain);
+    
+    cdetector = trainFasterRCNNObjectDetector(trainingData, detector, options, ...
+        'SmallestImageDimension', 400, ...
+        'NegativeOverlapRange', [0 0.3], ...
+        'PositiveOverlapRange', [0.6 1], ...
+        'BoxPyramidScale', 1.2, ...
+        'NumRegionsToSample', [256 128 256 128]);
     disp('DETECTOR TRAINED');
     save cdetector
 
@@ -165,7 +175,7 @@ function [layers, options] = buildRCNN(numTrain)
         inputLayer
         middleLayers
         finalLayers
-        ]
+        ];
 
     % use googlenet for transfer learning rather than train from scratch
     % gnet=googlenet;
@@ -173,11 +183,11 @@ function [layers, options] = buildRCNN(numTrain)
 
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
-        'MaxEpochs', 3, ...
+        'MaxEpochs', 5, ...
         'MiniBatchSize', 1, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 10);
+        'VerboseFrequency', 50);
 
     % Options for step 2.
     optionsStage2 = trainingOptions('sgdm', ...
@@ -185,7 +195,7 @@ function [layers, options] = buildRCNN(numTrain)
         'MiniBatchSize', 1, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 200);
+        'VerboseFrequency', 50);
 
     % Options for step 3.
     optionsStage3 = trainingOptions('sgdm', ...
@@ -193,7 +203,7 @@ function [layers, options] = buildRCNN(numTrain)
         'MiniBatchSize', 1, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 200);
+        'VerboseFrequency', 50);
 
     % Options for step 4.
     optionsStage4 = trainingOptions('sgdm', ...
@@ -209,8 +219,7 @@ function [layers, options] = buildRCNN(numTrain)
         optionsStage3
         optionsStage4
         ];
-    
-    options = optionsStage1;
+
 
 end
 
