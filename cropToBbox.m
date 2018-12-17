@@ -27,9 +27,8 @@ for idx = 5300:numTrain
         % save original image -- no cropping
         cropI = I;
     else       
-        % Insert the ROI labels.
-        I = insertShape(I, 'Rectangle', trainingData.vehicle{idx});
-        [mx, maxScoreIdx] = max(scores);    
+        % Insert the ROI box
+        I = insertShape(I, 'Rectangle', trainingData.vehicle{idx}); 
         cropI = imcrop(I, trainingData.vehicle{idx});
     end
 
