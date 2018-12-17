@@ -8,7 +8,7 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 10;
+numTrain = 38;
 [bbox, trainIdx] = BBox_Code(numTrain);
 vehicle = bbox';% transposed so that each are nx1 shaped
 imageFilename = trainds.Files(trainIdx);
@@ -42,7 +42,7 @@ trainingData = table(imageFilename, vehicle);
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
+doTrainingAndEval = true;
 loadPrev = false;
 
 tic
@@ -103,19 +103,19 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
     if numel(detbbox < 4) == 0
         % save original image -- no cropping
         cropI = I;
-        imshow(cropI)
+%         imshow(cropI)
     else       
         [mx, maxScoreIdx] = max(scores);
         % draw box and save image
         I = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
         imwrite(I, 'detectTest.png');
-        figure(1)
-        imshow(I)
+%         figure(1)
+%         imshow(I)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
         imwrite(cropI, 'detectCrop.png');
-        figure(2)
-        imshow(cropI)
+%         figure(2)
+%         imshow(cropI)
     end
 
     name = testds.Files(idx);

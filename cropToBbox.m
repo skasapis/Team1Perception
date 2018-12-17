@@ -26,17 +26,18 @@ for idx = 1:numTrain
     if numel(trainingData.vehicle{idx} < 4) == 0
         % save original image -- no cropping
         cropI = I;
+        disp('no bbox given -- saved original')
     else       
-        % Insert the ROI box
+        % crop to the ROI box
         box = trainingData.vehicle{idx}
-        I = insertShape(I, 'Rectangle', box); 
+%         I = insertShape(I, 'Rectangle', box); 
         cropI = imcrop(I, box);
         [w h] = size(cropI)
     end
     
     if w < 10 || h < 10
         cropI = I;
-        disp('0 size crop')
+        disp('bbox too small -- saved original')
     end
 
 %     figure(2)
