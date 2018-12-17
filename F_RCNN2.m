@@ -36,7 +36,7 @@ testds = imageDatastore('deploy/test/*/*_image.jpg');
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
+doTrainingAndEval = true;
 loadPrev = false;
 
 tic
@@ -70,7 +70,7 @@ if doTrainingAndEval
     [~, options] = buildRCNN(numTrain);
     
     cdetector = trainFasterRCNNObjectDetector(trainingData, detector, options, ...
-        'SmallestImageDimension', 400, ...
+        'SmallestImageDimension', 500, ...
         'NegativeOverlapRange', [0 0.3], ...
         'PositiveOverlapRange', [0.6 1], ...
         'BoxPyramidScale', 1.2);%, ...
@@ -187,7 +187,7 @@ function [layers, options] = buildRCNN(numTrain)
     % gnet=googlenet;
     % lgraph = layerGraph(net);
 
-    batchSz = 1
+    batchSz = 5
     
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
