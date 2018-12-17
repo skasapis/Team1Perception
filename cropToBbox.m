@@ -29,10 +29,14 @@ for idx = 5355:numTrain
     else       
         % Insert the ROI box
         box = trainingData.vehicle{idx}
-        [w h] = size(I)
         I = insertShape(I, 'Rectangle', box); 
         cropI = imcrop(I, box);
         [w h] = size(cropI)
+    end
+    
+    if w < 10 || h < 10
+        cropI = I;
+        disp('0 size crop')
     end
 
 %     figure(2)
