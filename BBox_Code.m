@@ -2,6 +2,7 @@ function [bboxAll, trainIdx] = BBox_Code(numTrain)
 
 files = dir('deploy/trainval/*/*_image.jpg');
 
+%% GOOD REPRESENTATIVE VEHICLE IMAGES
 % index of the first image in a given folder
 goodCarsFolder = [ones(1,12), 111, 422*ones(1,25)];
 
@@ -13,6 +14,11 @@ goodCarsFile = [54 74 80 88 89 92 95 100 103 107 109 110, ... % folder 1
 goodCarsFile = goodCarsFile + goodCarsFolder - 1;
 numGood = numel(goodCarsFile);
 
+%% ONLY PICK IMAGES THAT HAVE VEHICLES IN THEM
+% labels = dlmread('deploy/labels.csv',',',1,1);
+
+
+%% find appropriate bbox
 count = 1;
 skip = false;
 for idx = 1:numTrain %numel(files)
@@ -33,6 +39,7 @@ for idx = 1:numTrain %numel(files)
     proj = read_bin(strrep(snapshot, '_image.jpg', '_proj.bin'));
     proj = reshape(proj, [4, 3])';
 
+    skip = false;
     try
         bbox = read_bin(strrep(snapshot, '_image.jpg', '_bbox.bin'));
     catch
@@ -73,8 +80,8 @@ for idx = 1:numTrain %numel(files)
         bboxNew = [X,Y,x_length,y_length];
     end
     
-    if skip == true
-        % dont include in train set because has no car
+    if skip == true %|| labels(idx) == 0
+        % dont include in train set because has no car or no bbox
     elseif numTrain < numGood
         bboxAll{count} = bboxNew;
         trainIdx(count) = goodCarsFile(idx);
@@ -92,7 +99,7 @@ end
 % imshow(img);
 % hold on;
 % % lower left corner, width height
-% rectangle('Position',[X Y-y_length x_length y_length],...
+% rectangle('Position',[X Y+y_length x_length y_length],...
 %           'EdgeColor', 'c',...
 %           'Curvature',[0.8,0.4],...
 %           'LineWidth',2,...

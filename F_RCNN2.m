@@ -8,12 +8,6 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 38;
-[bbox, trainIdx] = BBox_Code(numTrain);
-vehicle = bbox';% transposed so that each are nx1 shaped
-imageFilename = trainds.Files(trainIdx);
-trainingData = table(imageFilename, vehicle);
-
 
 %% VALIDATE IMAGE/BOUNDING BOX DATA
 % Vehicle data [x pos, y pos, xsize, ysize];
@@ -47,6 +41,14 @@ loadPrev = false;
 
 tic
 if doTrainingAndEval
+    
+    % create data table to feed into train RCNN
+    numTrain = 38;
+    [bbox, trainIdx] = BBox_Code(numTrain);
+    vehicle = bbox';% transposed so that each are nx1 shaped
+    imageFilename = trainds.Files(trainIdx);
+    trainingData = table(imageFilename, vehicle);
+    
     % Set random seed to ensure example training reproducibility.
     rng(0);
      
@@ -107,10 +109,10 @@ for idx = [41 107 108 116 117 118 119]%1:height(testData)
     else       
         [mx, maxScoreIdx] = max(scores);
         % draw box and save image
-        I = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
-        imwrite(I, 'detectTest.png');
+        I2 = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
+        imwrite(I2, 'detectTest.png');
 %         figure(1)
-%         imshow(I)
+%         imshow(I2)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
         imwrite(cropI, 'detectCrop.png');
@@ -185,37 +187,39 @@ function [layers, options] = buildRCNN(numTrain)
     % gnet=googlenet;
     % lgraph = layerGraph(net);
 
+    batchSz = 5
+    
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
-        'MaxEpochs', 5, ...
-        'MiniBatchSize', 5, ...
+        'MaxEpochs', 4, ...
+        'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 50);
+        'VerboseFrequency', 10);
 
     % Options for step 2.
     optionsStage2 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 5, ...
+        'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 50);
+        'VerboseFrequency', 10);
 
     % Options for step 3.
     optionsStage3 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 5, ...
+        'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 50);
+        'VerboseFrequency', 10);
 
     % Options for step 4.
     optionsStage4 = trainingOptions('sgdm', ...
         'MaxEpochs', 5, ...
-        'MiniBatchSize', 5, ...
+        'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
-        'VerboseFrequency', 50);
+        'VerboseFrequency', 10);
 
     options = [
         optionsStage1
