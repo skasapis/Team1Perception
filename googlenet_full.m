@@ -5,7 +5,7 @@
 %Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
 
 %% Create image datastore
-all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
 labels=dlmread('deploy/labels.csv',',',1,1);
 

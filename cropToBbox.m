@@ -1,69 +1,45 @@
-% load all images in a folder
-% scale to 227x227
-% save cropped images to croppedTrainAlex folder
+% use this file to crop all images in the trainval set to their ground
+% truth bounding boxes ROI
 
-trainds = imageDatastore('deploy/trainval/fc26f4db-22c1-49c7-be8d-b769476cdff2/*_image.jpg'); %223 pictures
+trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 
-fname = trainds.Files;
-numTrain = numel(fname);
+numTrain = numel(trainds.Files);
+[bbox, trainIdx] = BBox_Code(numTrain);
+vehicle = bbox';% transposed so that each are nx1 shaped
+imageFilename = trainds.Files(trainIdx);
+trainingData = table(imageFilename, vehicle);
 
-% files = dir('deploy/trainval/fc26f4db-22c1-49c7-be8d-b769476cdff2/*_image.jpg');
+%% VALIDATE IMAGE/BOUNDING BOX DATA
+% Vehicle data [x pos, y pos, xsize, ysize];
 
+% Display first few rows of the data set.
+% % trainingData(1:4,:)
 
-for n = 1:numTrain   
-    snapshot = [files(n).folder, '/', files(n).name];
+for idx = 1:numTrain
+    %Read one of the images.
+    I = imread(trainingData.imageFilename{idx});
 
-%     corners = get_bbox(snapshot);
+    % Insert the ROI labels.
+    I = insertShape(I, 'Rectangle', trainingData.vehicle{idx});
+
+    % Resize and display image.
+    figure(1)
+    imshow(I)
+
+    cropI = imcrop(I, trainingData.vehicle{idx});
+    figure(2)
+    imshow(cropI)
     
-    orig = readimage(trainds,n);
-    img = imresize(orig,[227 227]);
-%     img = orig(corners(1),corners(2),corners(3),corners(4));
-    figure(1); subplot(2,1,1); imshow(orig)
-    subplot(2,1,2); imshow(img)
+    name = testds.Files(idx);
+    name = name{1}(end-50:end);
+    folderName = name(1:end-15);
     
-    % save image
-    filename = strrep(snapshot, 'deploy/trainval/fc26f4db-22c1-49c7-be8d-b769476cdff2/', 'deploy/trainval/croppedTrainAlex/');
-    imwrite(img,filename)
+    cd deployCropped2/trainval
+    status = mkdir(folderName);
+    cd ../../
     
-    
-end
-
-
-%% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
-
-% not working yet
-function [corners] = get_bbox(snapshot)
-
-% get name for bbox file
-try
-    bbox = read_bin(strrep(snapshot, '_image.jpg', '_bbox.bin'));
-catch
-    disp('[*] no bbox found.')
-    bbox = single([]);
-end
-bbox = reshape(bbox, 11, [])';
-
-% convert bounding box into corners for cropping
-for k = 1:size(bbox, 1)
-    R = rot(bbox(k, 1:3));
-    t = reshape(bbox(k, 4:6), [3, 1]);
-
-    sz = bbox(k, 7:9);
-    [vert_3D, edges] = get_bbox(-sz / 2, sz / 2);
-    vert_3D = R * vert_3D + t;
-
-    vert_2D = proj * [vert_3D; ones(1, size(vert_3D, 2))];
-    vert_2D = vert_2D ./ vert_2D(3, :);
-
-    clr = colors(mod(k - 1, size(colors, 1)) + 1, :);
-    for i = 1:size(edges, 2)
-        e = edges(:, i);
-
-        figure(1)
-        plot(vert_2D(1, e), vert_2D(2, e), 'color', clr)
-    end
-end
-
+    filename = ['deployCropped2/trainval/', name]
+    imwrite(cropI, filename)
 end
 
 % FOLDERS WITH VARIABLILITY IN CLASS

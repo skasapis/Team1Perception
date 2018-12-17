@@ -8,7 +8,7 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 500;
+numTrain = 1000;
 [bbox, trainIdx] = BBox_Code(numTrain);
 vehicle = bbox';% transposed so that each are nx1 shaped
 imageFilename = trainds.Files(trainIdx);
@@ -22,19 +22,19 @@ trainingData = table(imageFilename, vehicle);
 % % % trainingData(1:4,:)
 
 % Read one of the images.
-% % I = imread(trainingData.imageFilename{5});
-% % 
-% % % Insert the ROI labels.
-% % I = insertShape(I, 'Rectangle', trainingData.vehicle{5});
-% % 
-% % % Resize and display image.
-% % I = imresize(I,3);
-% % figure(1)
-% % imshow(I)
-% % 
-% % cropI = imcrop(I, trainingData.vehicle{5}*3);
-% % figure(2)
-% % imshow(cropI)
+I = imread(trainingData.imageFilename{5});
+
+% Insert the ROI labels.
+I = insertShape(I, 'Rectangle', trainingData.vehicle{5});
+
+% Resize and display image.
+I = imresize(I,3);
+figure(1)
+imshow(I)
+
+cropI = imcrop(I, trainingData.vehicle{5}*3);
+figure(2)
+imshow(cropI)
 
 
 %% TRAIN DETECTOR
@@ -66,7 +66,7 @@ if doTrainingAndEval
     [~, options] = buildRCNN(numTrain);
     
     cdetector = trainFasterRCNNObjectDetector(trainingData, detector, options, ...
-        'SmallestImageDimension', 227, ...
+        'SmallestImageDimension', 500, ...
         'NegativeOverlapRange', [0 0.3], ...
         'PositiveOverlapRange', [0.6 1], ...
         'BoxPyramidScale', 1.2);%, ...
