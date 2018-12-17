@@ -1,5 +1,7 @@
 # dont track the content of this folder
 deploy/
+deployCropped/
+deployCropped2/
 
 # dont track the content of these files
 projectNN.m

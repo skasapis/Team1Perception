@@ -15,20 +15,26 @@ trainingData = table(imageFilename, vehicle);
 % Display first few rows of the data set.
 % % trainingData(1:4,:)
 
-for idx = 1:numTrain
+for idx = 5300:numTrain
     %Read one of the images.
     I = imread(trainingData.imageFilename{idx});
 
-    % Insert the ROI labels.
-    I = insertShape(I, 'Rectangle', trainingData.vehicle{idx});
-
     % Resize and display image.
-    figure(1)
-    imshow(I)
+%     figure(1)
+%     imshow(I)
 
-    cropI = imcrop(I, trainingData.vehicle{idx});
-    figure(2)
-    imshow(cropI)
+    if numel(trainingData.vehicle{idx} < 4) == 0
+        % save original image -- no cropping
+        cropI = I;
+    else       
+        % Insert the ROI labels.
+        I = insertShape(I, 'Rectangle', trainingData.vehicle{idx});
+        [mx, maxScoreIdx] = max(scores);    
+        cropI = imcrop(I, trainingData.vehicle{idx});
+    end
+
+%     figure(2)
+%     imshow(cropI)
     
     name = trainds.Files(idx);
     name = name{1}(end-50:end);
