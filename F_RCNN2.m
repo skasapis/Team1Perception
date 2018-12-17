@@ -37,7 +37,7 @@ testds = imageDatastore('deploy/test/*/*_image.jpg');
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
 doTrainingAndEval = true;
-loadPrev = false;
+loadPrev = true;
 
 tic
 if doTrainingAndEval
@@ -79,7 +79,7 @@ if doTrainingAndEval
     save cdetector
 
 elseif loadPrev
-    load detector
+    load cdetector
     disp('DETECTOR LOADED');
 else
     % Load pretrained detector from the example.
@@ -93,7 +93,7 @@ toc
 %% APPLY DETECTOR TO TEST IMAGES
 
 tic
-for idx = [41 107 108 116 117 118 119]%1:height(testData) 
+for idx = [41 107 108 116 117 118 119 500 528 1604 1964]%1:height(testData) 
 
     % Read the image.
     I = imread(testds.Files{idx});
