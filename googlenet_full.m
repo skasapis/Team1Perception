@@ -16,7 +16,7 @@ labels_cat=categorical(labels_str,valueset);
 all_imds.Labels=labels_cat;
 
 %Split off some values for validation
-[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.8,'randomized');
+[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.6,'randomized');
 
 %% import googlenet and set options
 net=googlenet;
@@ -66,7 +66,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 8
+epochs = 5
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
