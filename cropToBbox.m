@@ -30,7 +30,7 @@ for idx = 1:numTrain
     figure(2)
     imshow(cropI)
     
-    name = testds.Files(idx);
+    name = trainds.Files(idx);
     name = name{1}(end-50:end);
     folderName = name(1:end-15);
     
