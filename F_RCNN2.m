@@ -8,7 +8,7 @@
 
 trainds = imageDatastore('deploy/trainval/*/*_image.jpg');
 testds = imageDatastore('deploy/test/*/*_image.jpg');
-numTrain = 1000;
+numTrain = 10;
 [bbox, trainIdx] = BBox_Code(numTrain);
 vehicle = bbox';% transposed so that each are nx1 shaped
 imageFilename = trainds.Files(trainIdx);
@@ -22,19 +22,21 @@ trainingData = table(imageFilename, vehicle);
 % % % trainingData(1:4,:)
 
 % Read one of the images.
-I = imread(trainingData.imageFilename{5});
-
-% Insert the ROI labels.
-I = insertShape(I, 'Rectangle', trainingData.vehicle{5});
-
-% Resize and display image.
-I = imresize(I,3);
-figure(1)
-imshow(I)
-
-cropI = imcrop(I, trainingData.vehicle{5}*3);
-figure(2)
-imshow(cropI)
+% % % I = imread(trainingData.imageFilename{5});
+% % % 
+% % % % Insert the ROI labels.
+% % % box = trainingData.vehicle{5};
+% % % box2 = [box(1:2), 2, 2];
+% % % I2 = insertShape(I, 'Rectangle',box); % whole box
+% % % I2 = insertShape(I, 'Rectangle', box2,'Color', {'green'}); % upper left corner
+% % % 
+% % % % Resize and display image.
+% % % figure(1)
+% % % imshow(I2)
+% % % 
+% % % cropI = imcrop(I, box);
+% % % figure(2)
+% % % imshow(cropI)
 
 
 %% TRAIN DETECTOR

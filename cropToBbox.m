@@ -15,7 +15,7 @@ trainingData = table(imageFilename, vehicle);
 % Display first few rows of the data set.
 % % trainingData(1:4,:)
 
-for idx = 5355:numTrain
+for idx = 1:numTrain
     %Read one of the images.
     I = imread(trainingData.imageFilename{idx});
 
@@ -46,9 +46,9 @@ for idx = 5355:numTrain
     name = name{1}(end-50:end);
     folderName = name(1:end-15);
     
-    cd deployCropped2/trainval
-    status = mkdir(folderName);
-    cd ../../
+%     cd deployCropped2/trainval
+%     status = mkdir(folderName);
+%     cd ../../
     
     filename = ['deployCropped2/trainval/', name]
     imwrite(cropI, filename)

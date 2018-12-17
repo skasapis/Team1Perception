@@ -2,17 +2,22 @@ function [bboxAll, trainIdx] = BBox_Code(numTrain)
 
 files = dir('deploy/trainval/*/*_image.jpg');
 
+% index of the first image in a given folder
 goodCarsFolder = [ones(1,12), 111, 422*ones(1,25)];
-goodCarsFile = [54 74 80 88 89 92 95 100 103 107 109 110, ...
-                1, ...
-                6 7 8 12 48 49 85 87 88 89 103 104 105 107 109 111 122 123 184 194 199 200 213 220, 232];
+
+% image number + 1 because are labeled starting at "0000.png"
+goodCarsFile = [54 74 80 88 89 92 95 100 103 107 109 110, ... % folder 1
+                1, ... %folder 2
+                6 7 8 12 48 49 85 87 88 89 103 104 105 107 109 111 122 123 184 194 199 200 213 220 232,... % folder 3
+                ];
 goodCarsFile = goodCarsFile + goodCarsFolder - 1;
+numGood = numel(goodCarsFile);
 
 count = 1;
 skip = false;
 for idx = 1:numTrain %numel(files)
 
-    if numTrain < 39
+    if numTrain < numGood
         snapshot = [files(goodCarsFolder(idx)).folder, '/', files(goodCarsFile(idx)).name];
         disp(snapshot)
     else
@@ -70,12 +75,15 @@ for idx = 1:numTrain %numel(files)
     
     if skip == true
         % dont include in train set because has no car
+    elseif numTrain < numGood
+        bboxAll{count} = bboxNew;
+        trainIdx(count) = goodCarsFile(idx);
+        count = count + 1;
     else
         bboxAll{count} = bboxNew;
         trainIdx(count) = idx;
         count = count + 1;
     end
-    idx = idx + 1;
 end
 % return
 end
