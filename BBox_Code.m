@@ -17,7 +17,7 @@ count = 1;
 skip = false;
 for idx = 1:numTrain %numel(files)
 
-    if numTrain < numGood
+    if numTrain <= numGood
         snapshot = [files(goodCarsFolder(idx)).folder, '/', files(goodCarsFile(idx)).name];
         disp(snapshot)
     else
