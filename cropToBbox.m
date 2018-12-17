@@ -28,8 +28,9 @@ for idx = 5300:numTrain
         cropI = I;
     else       
         % Insert the ROI box
-        I = insertShape(I, 'Rectangle', trainingData.vehicle{idx}); 
-        cropI = imcrop(I, trainingData.vehicle{idx});
+        box = trainingData.vehicle{idx}
+        I = insertShape(I, 'Rectangle', box); 
+        cropI = imcrop(I, box);
     end
 
 %     figure(2)
