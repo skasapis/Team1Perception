@@ -5,7 +5,8 @@
 %Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
 
 %% Create image datastore
-all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+% all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
 labels=dlmread('deploy/labels.csv',',',1,1);
 
@@ -16,7 +17,7 @@ labels_cat=categorical(labels_str,valueset);
 all_imds.Labels=labels_cat;
 
 %Split off some values for validation
-[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.6,'randomized');
+[imdsTrain,imdsValidation] = splitEachLabel(all_imds,0.8,'randomized');
 
 %% import googlenet and set options
 net=googlenet;
@@ -128,7 +129,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission15.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission16.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
