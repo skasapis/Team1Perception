@@ -15,7 +15,7 @@ goodCarsFile = goodCarsFile + goodCarsFolder - 1;
 numGood = numel(goodCarsFile);
 
 %% ONLY PICK IMAGES THAT HAVE VEHICLES IN THEM
-% labels = dlmread('deploy/labels.csv',',',1,1);
+labels = dlmread('deploy/labels.csv',',',1,1);
 
 
 %% find appropriate bbox
@@ -80,7 +80,7 @@ for idx = 1:numTrain %numel(files)
         bboxNew = [X,Y,x_length,y_length];
     end
     
-    if skip == true %|| labels(idx) == 0
+    if skip == true || labels(idx) == 0
         % dont include in train set because has no car or no bbox
     elseif numTrain < numGood
         bboxAll{count} = bboxNew;
