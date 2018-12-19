@@ -3,6 +3,7 @@ deploy/
 deployCropped/
 deployCropped2/
 CroppedPics1/
+CroppedPics2/
 
 # dont track the content of these files
 projectNN.m
