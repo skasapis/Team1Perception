@@ -81,10 +81,10 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-[net4Full, info] = trainNetwork(augimdsTrain,lgraph,options);
+[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
 %load net4Full
 toc
-save net4Full
+save new_net
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -94,7 +94,7 @@ test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
 tic
-[test_labels,~] = classify(net4Full,augimdstest);
+[test_labels,~] = classify(new_net,augimdstest);
 %Convert to 0,1,2
 test_labels=grp2idx(test_labels)-1;
 toc
