@@ -5,8 +5,8 @@
 %Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
 
 %% Create image datastore
-% all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
-all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+% all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Add labels from .csv
 labels=dlmread('deploy/labels.csv',',',1,1);
 
@@ -67,7 +67,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 5
+epochs = 8
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
@@ -81,19 +81,18 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
+[net4Crop, info] = trainNetwork(augimdsTrain,lgraph,options);
 toc
-save new_net
-save info
+save net4Crop
 disp('TRAINING COMPLETE!');
 
 %% classify test data
 % Create augmented dataset from test data
-test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
+test_imds=imageDatastore('CroppedPics1','IncludeSubfolders',1,'FileExtensions','.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
 tic
-[test_labels,~] = classify(new_net,augimdstest);
+[test_labels,~] = classify(net4Crop,augimdstest);
 %Convert to 0,1,2
 test_labels=grp2idx(test_labels)-1;
 toc
@@ -117,7 +116,8 @@ print('AccuracyAndLoss', '-dpng')
 
 function [printName] = getPrintName(idx)
     % get folder and picture name
-    files = dir('deploy/test/*/*_image.jpg');
+    %files = dir('deploy/test/*/*_image.jpg');
+    files = dir('CroppedPics1/*/*_image.jpg');
     snapshot = [files(idx).folder, '/', files(idx).name];
     %fullName = snapshot(107:end); % wrt Izzy path and Chris
     %fullName=snapshot(63:end); %wrt Marie path
@@ -129,7 +129,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission16.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission19.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
