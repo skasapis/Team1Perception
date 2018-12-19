@@ -64,7 +64,9 @@ function [printName] = getPrintName(idx,cropFldrNm)
     files = dir([cropFldrNm, '/*/*_image.jpg']);
     snapshot = [files(idx).folder, '/', files(idx).name];
     % later learned all image folders have same length
-    printName = snapshot(end-50:end);
+    fullName = snapshot(end-50:end);
+    % remove "_image.jpg" for when printing to the file
+    printName = fullName(1:end-10);
 end
 
 function [] = printToFile(labels, cropFldrNm, printTxtNm)

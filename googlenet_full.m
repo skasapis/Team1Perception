@@ -129,7 +129,8 @@ function [printName] = getPrintName(idx)
 % %     printName = fullName(1:end-10);
     
     % later learned all image folders have same length
-    printName = snapshot(end-50:end);
+    fullName = snapshot(end-50:end);
+    printName = fullName(1:end-10);
 end
 
 function [] = printToFile(labels)
