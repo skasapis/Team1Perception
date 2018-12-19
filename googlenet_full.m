@@ -81,9 +81,10 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-[net4Crop, info] = trainNetwork(augimdsTrain,lgraph,options);
+% [net4Crop, info] = trainNetwork(augimdsTrain,lgraph,options);
+load net4Crop
 toc
-save net4Crop
+% save net4Crop
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -121,7 +122,7 @@ function [printName] = getPrintName(idx)
     snapshot = [files(idx).folder, '/', files(idx).name];
     %fullName = snapshot(107:end); % wrt Izzy path and Chris
     %fullName=snapshot(63:end); %wrt Marie path
-    fullName=snapshot(47:end); %wrt ssh path
+    fullName=snapshot(48:end); %wrt ssh path
     
     % remove the "_image.jpg" for when printing to the file
     printName = fullName(1:end-10);
@@ -129,7 +130,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission19.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission20.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
