@@ -63,7 +63,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 5
+epochs = 10
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
@@ -125,7 +125,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission16.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission18.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
