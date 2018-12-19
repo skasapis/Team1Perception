@@ -81,10 +81,10 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
-%load net4Full
+% [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
+load net4Full
 toc
-save new_net
+% save new_net
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -94,7 +94,7 @@ test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
 tic
-[test_labels,~] = classify(new_net,augimdstest);
+[test_labels,~] = classify(net4Full, augimdstest);
 %Convert to 0,1,2
 test_labels=grp2idx(test_labels)-1;
 toc
@@ -123,15 +123,18 @@ function [printName] = getPrintName(idx)
     snapshot = [files(idx).folder, '/', files(idx).name];
     %fullName = snapshot(107:end); % wrt Izzy path and Chris
     %fullName=snapshot(63:end); %wrt Marie path
-    fullName=snapshot(48:end); %wrt ssh path
+% %     fullName=snapshot(47:end); %wrt ssh path
     
     % remove the "_image.jpg" for when printing to the file
-    printName = fullName(1:end-10);
+% %     printName = fullName(1:end-10);
+    
+    % later learned all image folders have same length
+    printName = snapshot(end-50:end);
 end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission21.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission22.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
