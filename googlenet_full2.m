@@ -70,7 +70,7 @@ augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 epochs = 8
 % Set options
 options = trainingOptions('sgdm', ...
-    'MiniBatchSize',500, ...
+    'MiniBatchSize',100, ...
     'MaxEpochs',epochs, ... % would like to try 8 or 12
     'InitialLearnRate',3e-4, ...
     'Shuffle','every-epoch', ...
@@ -80,23 +80,41 @@ options = trainingOptions('sgdm', ...
     %'Plots','training-progress');
 
 %% Train network
-tic
-[net4Full, info] = trainNetwork(augimdsTrain,lgraph,options);
-%load net4Full
-toc
-save net4Full
-disp('TRAINING COMPLETE!');
+% tic
+% [net4fullSz, info] = trainNetwork(augimdsTrain,lgraph,options);
+% load net4Crop
+% % load net4fullSz
+% toc
+% save net4fullSz
+% disp('TRAINING COMPLETE!');
 
 %% classify test data
 % Create augmented dataset from test data
-% test_imds=imageDatastore('CroppedPics1','IncludeSubfolders',1,'FileExtensions','.jpg');
-test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
-augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
+test_imdsCrop=imageDatastore('CroppedPics1','IncludeSubfolders',1,'FileExtensions','.jpg');
+test_imdsFull=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
+augimdstestCrop = augmentedImageDatastore(inputSize(1:2),test_imdsCrop);
+augimdstestFull = augmentedImageDatastore(inputSize(1:2),test_imdsFull);
 %Classify test data
 tic
-[test_labels,~] = classify(net4Full,augimdstest);
+cropIdx = [];
+fullIdx = [];
+for idx = 1:numel(test_imdsCrop.Files)
+    I = imread(test_imdsCrop.Files{idx});
+    [w h d] = size(I);
+    if w < 30 || h < 30 || w > 1000 || h > 800
+        fullIdx = [fullIdx, idx];
+    else
+        cropIdx = [cropIdx, idx];
+    end
+end
+
+[test_labelsCrop, scoresCrop] = classify(net4Crop,augimdstestCrop);
+[test_labelsFull, scoresFull] = classify(net4Full,augimdstestFull);
 %Convert to 0,1,2
-test_labels=grp2idx(test_labels)-1;
+test_labelsCrop=grp2idx(test_labelsCrop)-1;
+test_labelsFull=grp2idx(test_labelsFull)-1;
+test_labels(cropIdx) = test_labelsCrop;
+test_labels(fullIdx) = test_labelsFull;
 toc
 disp('CLASSIFICATION COMPLETE!');
 
@@ -118,8 +136,8 @@ print('AccuracyAndLoss', '-dpng')
 
 function [printName] = getPrintName(idx)
     % get folder and picture name
-    files = dir('deploy/test/*/*_image.jpg');
-%     files = dir('CroppedPics1/*/*_image.jpg');
+    %files = dir('deploy/test/*/*_image.jpg');
+    files = dir('CroppedPics1/*/*_image.jpg');
     snapshot = [files(idx).folder, '/', files(idx).name];
     %fullName = snapshot(107:end); % wrt Izzy path and Chris
     %fullName=snapshot(63:end); %wrt Marie path
@@ -131,7 +149,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission21.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission20.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
