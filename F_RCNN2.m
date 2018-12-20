@@ -36,14 +36,14 @@ testds = imageDatastore('deploy/test/*/*_image.jpg');
 %% TRAIN DETECTOR
 % A trained network is loaded from disk to save time when running the
 % example. Set this flag to true to train the network. 
-doTrainingAndEval = false;
-loadPrev = true;
+doTrainingAndEval = true;
+loadPrev = false;
 
 tic
 if doTrainingAndEval
     
     % create data table to feed into train RCNN
-    numTrain = 38;
+    numTrain = numel(trainds.Files); %38;
     [bbox, trainIdx] = BBox_Code(numTrain);
     vehicle = bbox';% transposed so that each are nx1 shaped
     imageFilename = trainds.Files(trainIdx);
@@ -70,7 +70,7 @@ if doTrainingAndEval
     [~, options] = buildRCNN(numTrain);
     
     cdetector = trainFasterRCNNObjectDetector(trainingData, detector, options, ...
-        'SmallestImageDimension', 500, ...
+        'SmallestImageDimension', 1000, ...
         'NegativeOverlapRange', [0 0.3], ...
         'PositiveOverlapRange', [0.6 1], ...
         'BoxPyramidScale', 1.2);%, ...
@@ -93,13 +93,14 @@ toc
 %% APPLY DETECTOR TO TEST IMAGES
 
 tic
-for idx = [41 107 108 116 117 118 119 500 528 1604 1964]%1:height(testData) 
+for idx = 1:numel(trainds.Files) 
+    % idx = [41 107 108 116 117 118 119 500 528 1604 1964]%
 
     % Read the image.
     I = imread(testds.Files{idx});
 
     % Run the detector.
-    [detbbox, scores, labels] = detect(cdetector,I)
+    [detbbox, scores, labels] = detect(cdetector,I);
 
     % crop image and save
     if numel(detbbox < 4) == 0
@@ -110,19 +111,19 @@ for idx = [41 107 108 116 117 118 119 500 528 1604 1964]%1:height(testData)
         [mx, maxScoreIdx] = max(scores);
         % draw box and save image
         I2 = insertShape(I, 'Rectangle', detbbox(maxScoreIdx,1:4));
-        imwrite(I2, 'detectTest.png');
+%         imwrite(I2, 'detectTest.png');
 %         figure(1)
 %         imshow(I2)
         
         cropI = imcrop(I, detbbox(maxScoreIdx,1:4));
-        imwrite(cropI, 'detectCrop.png');
+%         imwrite(cropI, 'detectCrop.png');
 %         figure(2)
 %         imshow(cropI)
     end
 
     name = testds.Files(idx);
     name = name{1}(end-50:end);
-    filename = ['deployCropped/', name]
+    filename = ['CroppedPics/', name];
     imwrite(cropI, filename)
 
 end
@@ -187,11 +188,12 @@ function [layers, options] = buildRCNN(numTrain)
     % gnet=googlenet;
     % lgraph = layerGraph(net);
 
-    batchSz = 5
+    batchSz = 5;
+    epochs = 8;
     
     % Options for step 1.
     optionsStage1 = trainingOptions('sgdm', ...
-        'MaxEpochs', 4, ...
+        'MaxEpochs', epochs, ...
         'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
@@ -199,7 +201,7 @@ function [layers, options] = buildRCNN(numTrain)
 
     % Options for step 2.
     optionsStage2 = trainingOptions('sgdm', ...
-        'MaxEpochs', 5, ...
+        'MaxEpochs', epochs, ...
         'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
@@ -207,7 +209,7 @@ function [layers, options] = buildRCNN(numTrain)
 
     % Options for step 3.
     optionsStage3 = trainingOptions('sgdm', ...
-        'MaxEpochs', 5, ...
+        'MaxEpochs', epochs, ...
         'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...
@@ -215,7 +217,7 @@ function [layers, options] = buildRCNN(numTrain)
 
     % Options for step 4.
     optionsStage4 = trainingOptions('sgdm', ...
-        'MaxEpochs', 5, ...
+        'MaxEpochs', epochs, ...
         'MiniBatchSize', batchSz, ...
         'InitialLearnRate', 1e-3, ...
         'CheckpointPath', tempdir, ...

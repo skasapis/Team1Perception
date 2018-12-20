@@ -84,7 +84,7 @@ disp('TRAINING COMPLETE!');
 
 %% classify test data
 % Create augmented dataset from test data
-% test_imds=imageDatastore('CroppedPics1','IncludeSubfolders',1,'FileExtensions','.jpg');
+% test_imds=imageDatastore('CroppedPics2','IncludeSubfolders',1,'FileExtensions','.jpg');
 test_imds=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
 augimdstest = augmentedImageDatastore(inputSize(1:2),test_imds);
 %Classify test data
