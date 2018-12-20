@@ -79,8 +79,8 @@ options = trainingOptions('sgdm', ...
 tic
 [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
 toc
-save new_net
-save info
+%save new_net
+%save info
 disp('TRAINING COMPLETE!');
 
 %% classify test data
