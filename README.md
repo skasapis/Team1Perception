@@ -21,11 +21,11 @@ To download the repo through terminal
 git clone https://github.com/skasapis/Team1Perception.git
 ```
 
-# To recreate our best submission results
+# To recreate our best submission results:
 Run ```googlenet_full.m``` as is. Open the file ```Team1_submission.txt```. This file will contain the file ID plus classifications in the desired format for Kaggle submission.
 
 
-# To recreate our cropped images
+# To recreate our cropped images:
 Run ```F_RCNN2.m``` as is. This will create a folder named CroppedPics containing the same image organizational format as /deploy/test/ available on the Kaggle page. 
 ```
 https://www.kaggle.com/c/fall2018-rob535-task1/leaderboard
@@ -33,7 +33,7 @@ https://www.kaggle.com/c/fall2018-rob535-task1/leaderboard
 Our best cropped images are contained in the folder CroppedPics2.
 
 
-# To recreate our attempt at classifying based on a combination of cropped images and full sized images
+# To recreate our attempt at classifying based on a combination of cropped images and full sized images:
 First, run ```googlenet_full.m``` but uncomment line 82 to save the trained net ```save net4Full```
 
 Next, run ```googlenet_full.m```  but change line 9
