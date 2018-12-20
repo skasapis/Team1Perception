@@ -46,8 +46,8 @@ test_labelsCrop=grp2idx(test_labelsCrop)-1;
 test_labelsFull=grp2idx(test_labelsFull)-1;
 
 % fill in cooresponding index for cropped and full within the whole set
-test_labels(cropIdx) = test_labelsCrop;
-test_labels(fullIdx) = test_labelsFull;
+test_labels(cropIdx) = test_labelsCrop(cropIdx);
+test_labels(fullIdx) = test_labelsFull(fullIdx);
 
 
 %% edit index where cropped claims label of 0 but full doesn't
