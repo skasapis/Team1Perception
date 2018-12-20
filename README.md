@@ -26,8 +26,7 @@ Run ```googlenet_full.m``` as is. Open the file ```Team1_submission.txt```. This
 
 
 # To recreate our cropped images
-run ```F_RCNN2.m``` as is
-this will create a folder named CroppedPics containing the same image organizational format as /deploy/test/ available on the kaggle page 
+Run ```F_RCNN2.m``` as is. This will create a folder named CroppedPics containing the same image organizational format as /deploy/test/ available on the Kaggle page. 
 ```
 https://www.kaggle.com/c/fall2018-rob535-task1/leaderboard
 ```
