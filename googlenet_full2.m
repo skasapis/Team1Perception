@@ -7,7 +7,7 @@ disp('NETWORK LOADED!');
 
 %% classify test data
 % set dependencies
-printTxtNm = 'Team1_submissionX.txt';
+printTxtNm = 'Team1_submissionY.txt';
 cropFldrNm = 'CroppedPics2';
 
 % load image dataset
@@ -35,11 +35,6 @@ end
 [test_labelsCrop, scoresCrop] = classify(net4Crop,augimdstestCrop);
 [test_labelsFull, scoresFull] = classify(net4Full,augimdstestFull);
 
-% scores gives you the score for each label 0,1,2 -- if you want to not classify
-% anything of score 0 you could then assign the label of the next highest
-% score ( 0 consists of 7% of our training data -- seems possible it is
-% also a very small percentage of our test data)
-
 %Convert to 0,1,2
 % the classify function returns labels of 1,2,3 so we must subtract 1
 test_labelsCrop=grp2idx(test_labelsCrop)-1;
@@ -50,7 +45,21 @@ test_labels(cropIdx) = test_labelsCrop(cropIdx);
 test_labels(fullIdx) = test_labelsFull(fullIdx);
 
 
-%% edit index where cropped claims label of 0 but full doesn't
+% edit index where full has higher score than cropped
+% take max of each column of cropped, if max score less than 0.6 then check
+% if the max score in full is higher than cropped score
+
+[m1, i1] = max(scoresCrop');
+[m2, i2] = max(scoresFull');
+
+cropUncertain = find(m1 < 0.6);
+fullHigher = find(m2(cropUncertain) > m1(cropUncertain));
+numReplaced = numel(fullHigher);
+relabelID = cropUncertain(fullHigher);
+test_labels(relabelID) = i2(relabelID) - 1;
+
+
+% edit index where cropped claims label of 0 but full doesn't
 cropZeros = sum(test_labelsCrop == 0)
 fullZeros = sum(test_labelsFull == 0)
 
@@ -60,10 +69,6 @@ fullZeroID = find(test_labelsFull == 0);
 disagreeOnZero = find(test_labelsFull(cropZeroID) ~= test_labelsCrop(cropZeroID));
 relabelID = cropZeroID(disagreeOnZero);
 test_labels(relabelID) = test_labelsFull(relabelID);
-
-% edit index where full has much higher score than cropped
-% take max of each column of cropped, if max score less than 0.4 then check
-% if the max score in full is higher than 0.6
 
 toc
 disp('CLASSIFICATION COMPLETE!');
