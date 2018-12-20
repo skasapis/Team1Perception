@@ -18,6 +18,7 @@ numGood = numel(goodCarsFile);
 labels = dlmread('deploy/labels.csv',',',1,1);
 
 
+
 %% find appropriate bbox
 count = 1;
 skip = false;
