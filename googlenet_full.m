@@ -81,10 +81,10 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-% [new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
-load net4Full
+[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
+% load net4Full
 toc
-% save new_net
+save new_net
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -135,7 +135,7 @@ end
 
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission22.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)

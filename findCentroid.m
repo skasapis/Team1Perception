@@ -7,7 +7,9 @@ disp('DETECTOR LOADED');
 testds = imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
 
 printTxtNm = 'Team1_centroids.txt';
+printTxtNm2 = 'bbox.txt';
 fileID = fopen(printTxtNm,'w');
+fileID2 = fopen(printTxtNm2,'w');
 fprintf(fileID,'guid/image/axis,value\n');%line 1
 
 
@@ -66,14 +68,20 @@ for idx = 1:numel(testds.Files)
     
     % print x
     fprintf(fileID,[name, '/x']);    
-    fprintf(fileID,',%d\n', x);
+    fprintf(fileID,',%f\n', x);
     % print y
     fprintf(fileID,[name, '/y']);    
-    fprintf(fileID,',%d\n', y);
+    fprintf(fileID,',%f\n', y);
     
     % print z
     fprintf(fileID,[name, '/z']);    
-    fprintf(fileID,',%d\n', z);
+    fprintf(fileID,',%f\n', z);
+    
+    % print bbox data to text file
+    fprintf(fileID2,'%f', box(1));
+    fprintf(fileID2,',%f', box(2));
+    fprintf(fileID2,',%f', box(3));
+    fprintf(fileID2,',%f\n', box(4));
 
 end
 
@@ -81,8 +89,7 @@ disp('CENTROIDS FOUND AND PRINTED')
 toc
 
 fclose(fileID);
-
-
+fclose(fileID2);
 
 
 

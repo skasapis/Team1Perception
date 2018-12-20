@@ -1,10 +1,64 @@
-# Team1Perception
-GitHub: 
+# Team1 -- Perception
 
-to download the repo through terminal -- it will download the repo into a folder called Team1Perception within whatever folder is your current working directory in terminal
+# To reproduce our results:
+
+First, install the following matlab toolboxes:
+to access matlab toolboxes: from matlab go to the tab home > add ons > search
+
+install:
+```
+googlenet
+alexnet
+deep learning toolbox
+Deep Learning Toolbox Importer for TensorFlow-Keras Models
+```
+
+
+# Downloading our code: 
+
+to download the repo through terminal 
+-- it will download the repo into a folder called ```Team1Perception``` within whatever folder is your current working directory 
 ```
 git clone https://github.com/skasapis/Team1Perception.git
 ```
+
+
+# To recreate our best submission results
+run ```googlenet_full.m``` as is
+open the file ```Team1_submission.txt``` 
+this file will contain the file ID plus classifications in the desired format for Kaggle submission
+
+
+# To recreate our cropped images
+run ```F_RCNN2.m``` as is
+this will create a folder named CroppedPics containing the same image organizational format as /deploy/test/ available on the kaggle page 
+```
+https://www.kaggle.com/c/fall2018-rob535-task1/leaderboard
+```
+
+
+# To recreate our attempt at classifying based on a combination of cropped images and full sized images
+run ```googlenet_full.m```  but change line 9
+```
+all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+```
+to the commented out line 8
+```
+all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
+```
+AND in line 
+```
+[net4Full, info] = trainNetwork(augimdsTrain,lgraph,options);
+```
+replace ```net4Full``` with ```net4Crop```
+
+
+then run ```googlenet_full2.m``` as is
+open the file ```Team1_submission.txt``` 
+this file will contain the file ID as well as classifications in the desired format for Kaggle submission
+
+
+# If you are going to add to material to the repo:
 
 whenever start to work - pull the newest version in the repository: 
 ```
@@ -48,22 +102,3 @@ vim .gitignore
 
 
 
-Matlab Neural Nets:
-
-If want to run the file googlenet_full.m you will need the following toolboxes in matlab:
-to access matlab toolboxes: from matlab go to the tab home > add ons > search
-
-install:
-```
-googlenet
-alexnet
-deep learning toolbox
-Deep Learning Toolbox Importer for TensorFlow-Keras Models
-```
-
-If you plan on having the correctly formatted Team1.txt file you must also edit the line
-```
-fullName=snapshot(63:end); %wrt Marie path
-```
-to crop off the correct number of characters for your specific path setup. This line is in
-the function getPrintName at the bottom of the file googlenet_full.m
