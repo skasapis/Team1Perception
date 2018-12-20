@@ -1,5 +1,4 @@
 %Marie Brooks and Izzy Salley
-%66% accuracy obtained 12/2/18
 %REF: https://www.mathworks.com/help/deeplearning/examples/train-deep-learning-network-to-classify-new-images.html
 
 %Confirmed that changing the fully connected and classification layers is an acceptable modification on 12/2
@@ -23,10 +22,6 @@ all_imds.Labels=labels_cat;
 net=googlenet;
 % Choose layers to replace
 lgraph = layerGraph(net);
-
-%If using AlexNet:
-%lgraph = layerGraph(net.Layers); 
-%set FCC and classification layers as required
 
 % Googlenet:
 learnableLayer=lgraph.Layers(142);
@@ -67,7 +62,7 @@ augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain, ...
 augimdsTrain = augmentedImageDatastore(inputSize(1:2),imdsTrain);
 augimdsValidation = augmentedImageDatastore(inputSize(1:2),imdsValidation);
 
-epochs = 8
+epochs = 8;
 % Set options
 options = trainingOptions('sgdm', ...
     'MiniBatchSize',100, ...
@@ -81,10 +76,10 @@ options = trainingOptions('sgdm', ...
 
 %% Train network
 tic
-[new_net, info] = trainNetwork(augimdsTrain,lgraph,options);
+[net4Full, info] = trainNetwork(augimdsTrain,lgraph,options);
 % load net4Full
 toc
-save new_net
+% save net4Full
 disp('TRAINING COMPLETE!');
 
 %% classify test data
@@ -104,14 +99,14 @@ printToFile(test_labels);
 disp('TEXT FILE GENERATED');
 
 %% display Loss and Accuracy
-figure(1)
-subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
-hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
-
-subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
-hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
-print('AccuracyAndLoss', '-dpng')
-
+% % figure(1)
+% % subplot(2,1,1); plot(info.TrainingAccuracy,'b'); xlabel('Epoch'); ylabel('Accuracy');
+% % hold on; plot(info.ValidationAccuracy, 'k-*'); grid on; axis([1 epochs 0 100]);
+% % 
+% % subplot(2,1,2); plot(info.TrainingLoss,'r'); xlabel('Epoch'); ylabel('Loss');
+% % hold on; plot(info.ValidationLoss,'k-*'); grid on; axis([1 epochs 0 2]);
+% % print('AccuracyAndLoss', '-dpng')
+% % 
 
 %% ////////////////// SUPPLEMENTARY FUNCTIONS //////////////////
 
@@ -121,13 +116,7 @@ function [printName] = getPrintName(idx)
     files = dir('deploy/test/*/*_image.jpg');
 %     files = dir('CroppedPics1/*/*_image.jpg');
     snapshot = [files(idx).folder, '/', files(idx).name];
-    %fullName = snapshot(107:end); % wrt Izzy path and Chris
-    %fullName=snapshot(63:end); %wrt Marie path
-% %     fullName=snapshot(47:end); %wrt ssh path
-    
-    % remove the "_image.jpg" for when printing to the file
-% %     printName = fullName(1:end-10);
-    
+ 
     % later learned all image folders have same length
     fullName = snapshot(end-50:end);
     printName = fullName(1:end-10);

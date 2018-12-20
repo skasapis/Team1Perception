@@ -7,10 +7,10 @@ disp('NETWORK LOADED!');
 
 %% classify test data
 % set dependencies
-printTxtNm = 'Team1_submissionY.txt';
+printTxtNm = 'Team1_submission.txt';
 cropFldrNm = 'CroppedPics2';
 
-% load image dataset
+%% load image dataset
 test_imdsCrop=imageDatastore(cropFldrNm,'IncludeSubfolders',1,'FileExtensions','.jpg');
 test_imdsFull=imageDatastore('deploy/test','IncludeSubfolders',1,'FileExtensions','.jpg');
 % Create augmented dataset from test data - scale images to 224x224 for googlenet requirement
@@ -60,8 +60,8 @@ test_labels(relabelID) = i2(relabelID) - 1;
 
 
 % edit index where cropped claims label of 0 but full doesn't
-cropZeros = sum(test_labelsCrop == 0)
-fullZeros = sum(test_labelsFull == 0)
+cropZeros = sum(test_labelsCrop == 0);
+fullZeros = sum(test_labelsFull == 0);
 
 cropZeroID = find(test_labelsCrop == 0);
 fullZeroID = find(test_labelsFull == 0);

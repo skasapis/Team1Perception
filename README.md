@@ -15,18 +15,14 @@ Deep Learning Toolbox Importer for TensorFlow-Keras Models
 
 
 # Downloading our code: 
-
-to download the repo through terminal 
+To download the repo through terminal 
 -- it will download the repo into a folder called ```Team1Perception``` within whatever folder is your current working directory 
 ```
 git clone https://github.com/skasapis/Team1Perception.git
 ```
 
-
 # To recreate our best submission results
-run ```googlenet_full.m``` as is
-open the file ```Team1_submission.txt``` 
-this file will contain the file ID plus classifications in the desired format for Kaggle submission
+Run ```googlenet_full.m``` as is. Open the file ```Team1_submission.txt```. This file will contain the file ID plus classifications in the desired format for Kaggle submission.
 
 
 # To recreate our cropped images
@@ -35,10 +31,13 @@ this will create a folder named CroppedPics containing the same image organizati
 ```
 https://www.kaggle.com/c/fall2018-rob535-task1/leaderboard
 ```
+Our best cropped images are contained in the folder CroppedPics2.
 
 
 # To recreate our attempt at classifying based on a combination of cropped images and full sized images
-run ```googlenet_full.m```  but change line 9
+First, run ```googlenet_full.m``` but uncomment line 82 to save the trained net ```save net4Full```
+
+Next, run ```googlenet_full.m```  but change line 9
 ```
 all_imds=imageDatastore('deploy/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 ```
@@ -46,16 +45,16 @@ to the commented out line 8
 ```
 all_imds=imageDatastore('deployCropped2/trainval','IncludeSubfolders',1,'FileExtensions','.jpg');
 ```
-AND in line 
+AND in line  79, replace ```net4Full``` with ```net4Crop```
 ```
 [net4Full, info] = trainNetwork(augimdsTrain,lgraph,options);
 ```
-replace ```net4Full``` with ```net4Crop```
+AND in line 92, replace  ```net4Full``` with ```net4Crop```
+```
+[test_labels,~] = classify(net4Full, augimdstest);
+```
 
-
-then run ```googlenet_full2.m``` as is
-open the file ```Team1_submission.txt``` 
-this file will contain the file ID as well as classifications in the desired format for Kaggle submission
+Then run ```googlenet_full2.m``` as is. Open the file ```Team1_submission.txt``` . This file will contain the file ID as well as classifications in the desired format for Kaggle submission.
 
 
 # If you are going to add to material to the repo:
