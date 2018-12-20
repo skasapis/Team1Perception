@@ -1,6 +1,6 @@
 function [] = printToFile(labels)
     % open file to print to
-    fileID = fopen('Team1_submission19.txt','w'); % will have to change 'w' if want to append instead of overwrite
+    fileID = fopen('Team1_submission23.txt','w'); % will have to change 'w' if want to append instead of overwrite
     fprintf(fileID,'guid/image,label\n');
     
     for n = 1:numel(labels)
