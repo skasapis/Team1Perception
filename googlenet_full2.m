@@ -1,7 +1,7 @@
 %% Load network
 tic
 load net4Crop
-load net4fullSz
+load net4Full
 toc
 disp('NETWORK LOADED!');
 
@@ -24,7 +24,7 @@ fullIdx = [];
 for idx = 1:numel(test_imdsCrop.Files)
     I = imread(test_imdsCrop.Files{idx});
     [w h d] = size(I);
-    if w < 30 || h < 30 || w > 1000 || h > 800
+    if w < 20 || h < 20
         fullIdx = [fullIdx, idx];
     else
         cropIdx = [cropIdx, idx];
@@ -48,6 +48,22 @@ test_labelsFull=grp2idx(test_labelsFull)-1;
 % fill in cooresponding index for cropped and full within the whole set
 test_labels(cropIdx) = test_labelsCrop;
 test_labels(fullIdx) = test_labelsFull;
+
+
+%% edit index where cropped claims label of 0 but full doesn't
+cropZeros = sum(test_labelsCrop == 0)
+fullZeros = sum(test_labelsFull == 0)
+
+cropZeroID = find(test_labelsCrop == 0);
+fullZeroID = find(test_labelsFull == 0);
+
+disagreeOnZero = find(test_labelsFull(cropZeroID) ~= test_labelsCrop(cropZeroID));
+relabelID = cropZeroID(disagreeOnZero);
+test_labels(relabelID) = test_labelsFull(relabelID);
+
+% edit index where full has much higher score than cropped
+% take max of each column of cropped, if max score less than 0.4 then check
+% if the max score in full is higher than 0.6
 
 toc
 disp('CLASSIFICATION COMPLETE!');
